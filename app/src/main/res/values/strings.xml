@@ -1,0 +1,16 @@
+<resources>
+  <string name="app_name">ComposeStyles</string>
+  <string name="person_input">Neue Person</string>
+  <string name="firstName">Vorname</string>
+  <string name="lastName">Nachname</string>
+  <string name="email">Mail</string>
+  <string name="charLimit">maximal 16 Zeichen</string>
+  <string name="phone">Telefon</string>
+  <string name="errorFirstName">Vorname ist zu lang</string>
+  <string name="errorLastName">Nachname ist zu lang</string>
+  <string name="errorEmail">Emailadresse ist unzulässig</string>
+  <string name="errorPhone">Telefonnummer ist unzulässig</string>
+  <string name="send">Senden</string>
+  <string name="save">Speichern</string>
+  <string name="back">Zurück</string>
+</resources>
