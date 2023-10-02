@@ -37,7 +37,7 @@ class PeopleViewModel : ViewModel() {
    fun onImagePathChange(value: String?) { imagePath = value }
 
    // mutabelList with observer
-   val people: SnapshotStateList<Person> = mutableStateListOf<Person>()
+   val people: SnapshotStateList<Person> = mutableStateListOf()
 
    init{
 //    errorMessage = "Test SnackBar: Fehlermeldung ..."
