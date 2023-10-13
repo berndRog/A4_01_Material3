@@ -13,35 +13,45 @@ import java.util.*
 
 class PeopleViewModel : ViewModel() {
 
-   var id: UUID = UUID.randomUUID()
+   private var _id: UUID = UUID.randomUUID()
+   val id
+      get() = _id
 
    // State = Observables (DataBinding)
-   var firstName: String by mutableStateOf(value = "")
-      private set
-   fun onFirstNameChange(value: String) { firstName = value }
+   private var _firstName: String by mutableStateOf(value = "")
+   val firstName
+      get() = _firstName
+   fun onFirstNameChange(value: String) {
+      if(value != _firstName )  _firstName = value }
 
-   var lastName: String by mutableStateOf(value = "")
-      private set
-   fun onLastNameChange(value: String) { lastName = value }
+   private var _lastName: String by mutableStateOf(value = "")
+   val lastName
+      get() = _lastName
+   fun onLastNameChange(value: String) {
+      if(value != _lastName )  _lastName = value
+   }
 
-   var email: String? by mutableStateOf(value = null)
-      private set
-   fun onEmailChange(value: String) { email = value }
+   private var _email: String? by mutableStateOf(value = null)
+   val email
+      get() = _email
+   fun onEmailChange(value: String) {
+      if(value != _email )  _email = value }
 
-   var phone: String? by mutableStateOf(value = null)
-      private set
-   fun onPhoneChange(value: String) { phone = value }
+   private var _phone: String? by mutableStateOf(value = null)
+   val phone
+      get() = _phone
+   fun onPhoneChange(value: String) {
+      if(value != _phone )  _phone = value }
 
-   var imagePath: String? by mutableStateOf(value = null)
-      private set
-   fun onImagePathChange(value: String?) { imagePath = value }
+   private var _imagePath: String? by mutableStateOf(value = null)
+   val imagePath
+      get() = _imagePath
+   fun onImagePathChange(value: String?) {
+      if(value != _imagePath )  _imagePath = value
+   }
 
    // mutabelList with observer
    val people: SnapshotStateList<Person> = mutableStateListOf()
-
-   init{
-//    errorMessage = "Test SnackBar: Fehlermeldung ..."
-   }
 
    // lifecycle ViewModel
    override fun onCleared() {
@@ -50,22 +60,13 @@ class PeopleViewModel : ViewModel() {
    }
 
    fun add() {
-      val person = getNewPersonFromState()
-      logDebug(tag, "add() ${person.firstName} ${person.lastName}")
+      val person = getPersonFromState()
+      logDebug(tag, "add() ${person.firstName} ${person.lastName} ${person.id}")
       people.add(person)
    }
 
-   private fun setStateFromPerson(person: Person) {
-      id        = person.id
-      firstName = person.firstName
-      lastName  = person.lastName
-      email     = person.email
-      phone     = person.phone
-      imagePath = person.imagePath
-   }
-
-   private fun getNewPersonFromState(): Person =
-      Person(firstName, lastName, email, phone, imagePath)
+   fun getPersonFromState(): Person =
+      Person(_firstName, _lastName, _email, _phone, _imagePath, _id)
 
    companion object {
       private val tag:String = "ok>PeopleViewModel    ."

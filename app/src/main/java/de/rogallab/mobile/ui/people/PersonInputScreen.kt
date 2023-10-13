@@ -30,60 +30,57 @@ fun PersonInputScreen(
 
    val tag = "ok>PersonInputScreen  ."
 
-   AppTheme {
-
-      Column(
-         modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(
-               state = rememberScrollState(),
-               enabled = true,
-               reverseScrolling = true
-            )
-      ) {
-
-         TopAppBar(
-            title = { Text(stringResource(R.string.person_input)) },
-            navigationIcon = {
-               IconButton(onClick = { }) {
-                  Icon(
-                     imageVector = Icons.Default.ArrowBack,
-                     contentDescription = stringResource(R.string.back)
-                  )
-               }
-            }
+   Column(
+      modifier = Modifier
+         .fillMaxWidth()
+         .verticalScroll(
+            state = rememberScrollState(),
+            enabled = true,
+            reverseScrolling = true
          )
+   ) {
 
-         InputNameMailPhone(
-            firstName = viewModel.firstName,                          // State ↓
-            onFirstNameChange = { viewModel.onFirstNameChange(it) },  // Event ↑
-            lastName = viewModel.lastName,                            // State ↓
-            onLastNameChange = { viewModel.onLastNameChange(it) },    // Event ↑
-            email = viewModel.email,                                  // State ↓
-            onEmailChange = { viewModel.onEmailChange(it) },          // Event ↑
-            phone = viewModel.phone,                                  // State ↓
-            onPhoneChange = { viewModel.onPhoneChange(it) }           // Event ↑
-         )
-
-
-         Button(
-            modifier = Modifier
-               .padding(top = 8.dp)
-               .padding(horizontal = 8.dp)
-               .fillMaxWidth(),
-            onClick = {
-               logDebug(tag, "onClickHandler()")
-               val id = viewModel.add()
-               // navigate ...
+      TopAppBar(
+         title = { Text(stringResource(R.string.person_input)) },
+         navigationIcon = {
+            IconButton(onClick = { }) {
+               Icon(
+                  imageVector = Icons.Default.ArrowBack,
+                  contentDescription = stringResource(R.string.back)
+               )
             }
-         ) {
-            Text(
-               modifier = Modifier.padding(vertical = 4.dp),
-               style = MaterialTheme.typography.bodyLarge,
-               text = stringResource(R.string.save)
-            )
          }
-      }
+      )
 
+      InputNameMailPhone(
+         firstName = viewModel.firstName,                          // State ↓
+         onFirstNameChange = { viewModel.onFirstNameChange(it) },  // Event ↑
+         lastName = viewModel.lastName,                            // State ↓
+         onLastNameChange = { viewModel.onLastNameChange(it) },    // Event ↑
+         email = viewModel.email,                                  // State ↓
+         onEmailChange = { viewModel.onEmailChange(it) },          // Event ↑
+         phone = viewModel.phone,                                  // State ↓
+         onPhoneChange = { viewModel.onPhoneChange(it) }           // Event ↑
+      )
+
+
+      Button(
+         modifier = Modifier
+            .padding(top = 8.dp)
+            .padding(horizontal = 8.dp)
+            .fillMaxWidth(),
+         onClick = {
+            logDebug(tag, "onClickHandler()")
+            val id = viewModel.add()
+            // navigate ...
+         }
+      ) {
+         Text(
+            modifier = Modifier.padding(vertical = 4.dp),
+            style = MaterialTheme.typography.bodyLarge,
+            text = stringResource(R.string.save)
+         )
+      }
    }
+
 }
