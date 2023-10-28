@@ -74,8 +74,6 @@ dependencies {
    implementation("androidx.compose.ui:ui-tooling-preview")
    val material3 = "1.1.2"
    implementation("androidx.compose.material3:material3:$material3")
-
-
    implementation("androidx.compose.material:material-icons-extended:$compose")
 
    // Lifecycle,

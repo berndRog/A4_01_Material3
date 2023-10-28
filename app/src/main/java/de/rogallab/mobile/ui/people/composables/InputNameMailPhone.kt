@@ -21,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -31,18 +32,17 @@ import de.rogallab.mobile.utilities.logDebug
 
 @Composable
 fun InputNameMailPhone(
-   firstName: String,                    // State ↓
-   onFirstNameChange: (String) -> Unit,  // Event ↑
-   lastName: String,                     // State ↓
-   onLastNameChange: (String) -> Unit,   // Event ↑
-   email: String?,                       // State ↓
-   onEmailChange: (String) -> Unit,      // Event ↑
-   phone: String?,                       // State ↓
-   onPhoneChange: (String) -> Unit       // Event ↑
-) {
+   firstName: String,                        // State ↓
+   onFirstNameChange: (String) -> Unit,      // Event ↑
+   lastName: String,                         // State ↓
+   onLastNameChange: (String) -> Unit,       // Event ↑
+   email: String?,                           // State ↓
+   onEmailChange: (String) -> Unit,          // Event ↑
+   phone: String?,                           // State ↓
+   onPhoneChange: (String) -> Unit,          // Event ↑
 
+) {
    val tag = "ok>InputNameMailPhone ."
-   logDebug(tag, "Start")
 
    val focusManager = LocalFocusManager.current
 
@@ -99,7 +99,6 @@ fun InputNameMailPhone(
       },
    )
 
-
    var isErrorLastName by remember { mutableStateOf(false) }
    OutlinedTextField(
       modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth(),
@@ -151,9 +150,18 @@ fun InputNameMailPhone(
       },
    )
 
-   var isErrorEmail by rememberSaveable { mutableStateOf(false) }
+   var isErrorEmail by remember { mutableStateOf(false) }
+   var isEmailFocus by remember { mutableStateOf(false) }
    OutlinedTextField(
-      modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth(),
+      modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth()
+         .onFocusChanged {
+            if(!it.isFocused && isEmailFocus) {
+               // user is leaving textfield
+               isErrorEmail = validateEmail(email)
+               logDebug("ok>Test", "user leaving email textfield isErrorEmail $isErrorEmail")
+            }
+            isEmailFocus = it.isFocused
+         },
       value = email ?: "",
       onValueChange = { onEmailChange(it) }, // Event ↑
       label = { Text(text = stringResource(R.string.email)) },
@@ -168,25 +176,20 @@ fun InputNameMailPhone(
          keyboardType = KeyboardType.Email,
          imeAction = ImeAction.Next
       ),
-      // check when keyboard action is clicked
+      // check if keyboard action is clicked
       keyboardActions = KeyboardActions(
          onNext = {
-            email?.let {
-               isErrorEmail = ! isValidEmail(it)
-               logDebug(tag, "$it isErrorEmail $isErrorEmail")
-            }
+            isErrorEmail = validateEmail(email)
             if(!isErrorEmail) focusManager.moveFocus(FocusDirection.Down)
          }
       ),
       isError = isErrorEmail,
       supportingText = {
-         if (isErrorEmail) {
-            Text(
-               modifier = Modifier.fillMaxWidth(),
-               text = stringResource(R.string.errorEmail),
-               color = MaterialTheme.colorScheme.error
-            )
-         }
+         if (isErrorEmail) { Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.errorEmail),
+            color = MaterialTheme.colorScheme.error
+         )}
       },
       trailingIcon = {
          if (isErrorEmail)
@@ -198,14 +201,21 @@ fun InputNameMailPhone(
       },
    )
 
-   var isErrorPhone by rememberSaveable { mutableStateOf(false) }
+   var isErrorPhone by remember { mutableStateOf(false) }
+   var isPhoneFocus by remember { mutableStateOf(false) }
    OutlinedTextField(
-      modifier = Modifier
-         .padding(horizontal = 8.dp)
-         .fillMaxWidth(),
+      modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth()
+         .onFocusChanged {
+            if(!it.isFocused && isPhoneFocus) {
+               // user is leaving textfield
+               isErrorPhone = validatePhone(phone)
+               logDebug("ok>Test", "user leaving phone textfield isErrorPhone $isErrorPhone")
+            }
+            isPhoneFocus = it.isFocused
+         },
       value = phone ?: "",
-      onValueChange = { onPhoneChange(it) },
-      label = { Text(text = stringResource(R.string.phone)) },
+      onValueChange = { onPhoneChange(it) }, // Event ↑
+      label = { Text(text = stringResource( R.string.phone)) },
       textStyle = MaterialTheme.typography.bodyLarge,
       leadingIcon = {
          Icon(
@@ -220,13 +230,11 @@ fun InputNameMailPhone(
       // check when keyboard action is clicked
       keyboardActions = KeyboardActions(
          onDone = {
-            focusManager.clearFocus() // close keyboard
+            isErrorPhone = validatePhone(phone)
+            if(!isErrorEmail && !isErrorPhone)
+               focusManager.clearFocus() // close keyboard
          }
-      ) {
-         phone?.let {
-            isErrorPhone = ! isValidPhone(it)
-         }
-      },
+      ),
       isError = isErrorPhone,
       supportingText = {
          if (isErrorPhone) {
@@ -248,10 +256,20 @@ fun InputNameMailPhone(
    )
 }
 
-fun isValidEmail(email: String): Boolean {
-   return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+fun validateEmail(email: String?): Boolean{
+   email?.let {
+      val isError = ! android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+      // logDebug("ok>Validation Email   .", "$email isError $isError")
+      return isError
+   }
+   return false
 }
 
-fun isValidPhone(phone: String): Boolean {
-   return android.util.Patterns.PHONE.matcher(phone).matches()
+fun validatePhone(phone: String?): Boolean {
+   phone?.let {
+      val isError = ! android.util.Patterns.PHONE.matcher(phone).matches()
+      // logDebug("ok>Validation Phone   .", "$phone isError $isError")
+      return isError
+   }
+   return false
 }

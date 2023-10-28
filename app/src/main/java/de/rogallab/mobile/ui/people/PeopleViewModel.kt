@@ -14,8 +14,6 @@ import java.util.*
 class PeopleViewModel : ViewModel() {
 
    private var _id: UUID = UUID.randomUUID()
-   val id
-      get() = _id
 
    // State = Observables (DataBinding)
    private var _firstName: String by mutableStateOf(value = "")
@@ -35,13 +33,15 @@ class PeopleViewModel : ViewModel() {
    val email
       get() = _email
    fun onEmailChange(value: String) {
-      if(value != _email )  _email = value }
+      if(value != _email )  _email = value
+   }
 
    private var _phone: String? by mutableStateOf(value = null)
    val phone
       get() = _phone
    fun onPhoneChange(value: String) {
-      if(value != _phone )  _phone = value }
+      if(value != _phone )  _phone = value
+   }
 
    private var _imagePath: String? by mutableStateOf(value = null)
    val imagePath
@@ -61,12 +61,25 @@ class PeopleViewModel : ViewModel() {
 
    fun add() {
       val person = getPersonFromState()
-      logDebug(tag, "add() ${person.firstName} ${person.lastName} ${person.id}")
-      people.add(person)
+      logDebug(tag, "add() ${person.asString()}")
+      if(people.firstOrNull{ it.id == person.id } == null) {
+         // no person found with same id
+         people.add(person)
+         clearState()
+      }
    }
 
    fun getPersonFromState(): Person =
       Person(_firstName, _lastName, _email, _phone, _imagePath, _id)
+
+   fun clearState() {
+      _firstName = ""
+      _lastName = ""
+      _email = null
+      _phone = null
+      _imagePath = null
+      _id = UUID.randomUUID()
+   }
 
    companion object {
       private val tag:String = "ok>PeopleViewModel    ."
