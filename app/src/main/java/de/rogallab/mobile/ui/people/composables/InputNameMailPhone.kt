@@ -16,12 +16,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -44,23 +44,43 @@ fun InputNameMailPhone(
 ) {
    val tag = "ok>InputNameMailPhone ."
 
+   val context = LocalContext.current
    val focusManager = LocalFocusManager.current
 
-   val charLimit = 16
+   val textFirstName = stringResource(R.string.firstName)
+   val textLastName = stringResource(R.string.lastName)
+   val textEmail = stringResource(R.string.email)
+   val textPhone = stringResource(R.string.phone)
+   val charMin = stringResource(R.string.errorCharMin).toInt()
+   val charMax = stringResource(R.string.errorCharMax).toInt()
 
    var isErrorFirstName by rememberSaveable { mutableStateOf(false) }
+   var isFirstNameFocus by rememberSaveable { mutableStateOf(false) }
+   var errorTextFirstName by rememberSaveable { mutableStateOf("") }
    OutlinedTextField(
-      modifier = Modifier.padding(horizontal = 8.dp) .fillMaxWidth(),
+      modifier = Modifier
+         .padding(horizontal = 8.dp)
+         .fillMaxWidth()
+         .onFocusChanged { focusState ->
+            if (!focusState.isFocused && isFirstNameFocus) {
+               val (e, t) = isNameTooShort(firstName, charMin, textFirstName)
+               isErrorFirstName = e
+               errorTextFirstName = t
+            }
+            isFirstNameFocus = focusState.isFocused
+         },
       value = firstName,                 // State ↓
       onValueChange = {
          onFirstNameChange(it)           // Event ↑
-         isErrorFirstName = it.length > charLimit
+         val (e, t) = isNameTooLong(it, charMax, textFirstName)
+         isErrorFirstName = e
+         errorTextFirstName = t
       },
-      label = { Text(text = stringResource(R.string.firstName)) },
+      label = { Text(text = textFirstName) },
       textStyle = MaterialTheme.typography.bodyLarge,
       leadingIcon = {
          Icon(imageVector = Icons.Outlined.Person,
-            contentDescription = stringResource(R.string.firstName))
+            contentDescription = textFirstName)
       },
       singleLine = true,
       keyboardOptions = KeyboardOptions.Default.copy(
@@ -68,7 +88,16 @@ fun InputNameMailPhone(
       ),
       keyboardActions = KeyboardActions(
          onNext = {
-            focusManager.moveFocus(FocusDirection.Down) // next OutlinedTextField
+            val (e, t) = isNameTooShort(firstName, charMin, textFirstName)
+            isErrorFirstName = e
+            errorTextFirstName = t
+            if(!isErrorFirstName) {
+               val (e2, t2) = isNameTooLong(firstName, charMax, textFirstName)
+               isErrorFirstName = e2
+               errorTextFirstName = t2
+            }
+            if(!isErrorFirstName)
+               focusManager.moveFocus(FocusDirection.Down)
          }
       ),
       isError = isErrorFirstName,
@@ -76,14 +105,13 @@ fun InputNameMailPhone(
          if (!isErrorFirstName) {
             Text(
                modifier = Modifier.fillMaxWidth(),
-               text = stringResource(R.string.charLimit),
+               text = stringResource(R.string.okChars),
                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
          } else {
             Text(
                modifier = Modifier.fillMaxWidth(),
-               text = stringResource(R.string.errorFirstName) +
-                  ": ${firstName.length}",
+               text = errorTextFirstName,
                color = MaterialTheme.colorScheme.error
             )
          }
@@ -92,20 +120,34 @@ fun InputNameMailPhone(
          if (isErrorFirstName)
             Icon(
                imageVector = Icons.Filled.Error,
-               contentDescription = stringResource(R.string.errorFirstName) +
-                  ": ${firstName.length}",
+               contentDescription = errorTextFirstName,
                tint = MaterialTheme.colorScheme.error
             )
       },
    )
 
-   var isErrorLastName by remember { mutableStateOf(false) }
+   var isErrorLastName by rememberSaveable { mutableStateOf(false) }
+   var isLastNameFocus by rememberSaveable { mutableStateOf(false) }
+   var errorTextLastName by rememberSaveable { mutableStateOf("") }
    OutlinedTextField(
-      modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth(),
+      modifier = Modifier
+         .padding(horizontal = 8.dp)
+         .fillMaxWidth()
+         .onFocusChanged { focusState ->
+            if (!focusState.isFocused && isLastNameFocus) {
+               val (e, t) = isNameTooShort(lastName, charMin, textLastName)
+               isErrorLastName = e
+               errorTextLastName = t
+            }
+            isLastNameFocus = focusState.isFocused
+         },
       value = lastName,                  // State ↓
       onValueChange = {
          onLastNameChange(it)            // Event ↑
-         isErrorLastName = it.length > charLimit
+         val (e, t) = isNameTooLong(it, charMax, textLastName)
+         isErrorLastName = e
+         errorTextLastName = t
+
       },
       label = { Text(text = stringResource(R.string.lastName)) },
       textStyle = MaterialTheme.typography.bodyLarge,
@@ -119,7 +161,15 @@ fun InputNameMailPhone(
       ),
       keyboardActions = KeyboardActions(
          onNext = {
-            focusManager.moveFocus(FocusDirection.Down)
+            val (e, t) = isNameTooShort(lastName, charMin, textLastName)
+            isErrorLastName = e
+            errorTextLastName = t
+            if(!isErrorLastName) {
+               val (e2, t2) = isNameTooLong(lastName, charMax, textLastName)
+               isErrorLastName = e2
+               errorTextLastName = t2
+            }
+            if(!isErrorLastName) focusManager.moveFocus(FocusDirection.Down)
          }
       ),
       isError = isErrorLastName,
@@ -127,14 +177,13 @@ fun InputNameMailPhone(
          if (!isErrorLastName) {
             Text(
                modifier = Modifier.fillMaxWidth(),
-               text = stringResource(R.string.charLimit),
+               text = stringResource(R.string.okChars),
                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
          } else {
             Text(
                modifier = Modifier.fillMaxWidth(),
-               text = stringResource(R.string.errorLastName) +
-                  ": ${lastName.length}",
+               text = errorTextLastName,
                color = MaterialTheme.colorScheme.error
             )
          }
@@ -143,33 +192,35 @@ fun InputNameMailPhone(
          if (isErrorLastName)
             Icon(
                imageVector = Icons.Filled.Error,
-               contentDescription = stringResource(R.string.errorLastName) +
-                  ": ${lastName.length}",
+               contentDescription = errorTextLastName,
                tint = MaterialTheme.colorScheme.error
             )
       },
    )
 
-   var isErrorEmail by remember { mutableStateOf(false) }
-   var isEmailFocus by remember { mutableStateOf(false) }
+   var isErrorEmail by rememberSaveable { mutableStateOf(false) }
+   var isEmailFocus by rememberSaveable { mutableStateOf(false) }
+   var errorTextEmail by rememberSaveable { mutableStateOf("") }
    OutlinedTextField(
-      modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth()
-         .onFocusChanged {
-            if(!it.isFocused && isEmailFocus) {
-               // user is leaving textfield
-               isErrorEmail = validateEmail(email)
-               logDebug("ok>Test", "user leaving email textfield isErrorEmail $isErrorEmail")
+      modifier = Modifier
+         .padding(horizontal = 8.dp)
+         .fillMaxWidth()
+         .onFocusChanged { focusState ->
+            if (!focusState.isFocused && isEmailFocus) {
+               val(e,t) = validateEmail(email, textEmail)
+               isErrorEmail = e
+               errorTextEmail = t
             }
-            isEmailFocus = it.isFocused
+            isEmailFocus = focusState.isFocused
          },
       value = email ?: "",
       onValueChange = { onEmailChange(it) }, // Event ↑
-      label = { Text(text = stringResource(R.string.email)) },
+      label = { Text(text = textEmail) },
       textStyle = MaterialTheme.typography.bodyLarge,
       leadingIcon = {
          Icon(
             imageVector = Icons.Outlined.Email,
-            contentDescription = stringResource(R.string.email)
+            contentDescription = textEmail
          )},
       singleLine = true,
       keyboardOptions = KeyboardOptions(
@@ -179,7 +230,9 @@ fun InputNameMailPhone(
       // check if keyboard action is clicked
       keyboardActions = KeyboardActions(
          onNext = {
-            isErrorEmail = validateEmail(email)
+            val(e,t) = validateEmail(email, textEmail)
+            isErrorEmail = e
+            errorTextEmail = t
             if(!isErrorEmail) focusManager.moveFocus(FocusDirection.Down)
          }
       ),
@@ -187,7 +240,7 @@ fun InputNameMailPhone(
       supportingText = {
          if (isErrorEmail) { Text(
             modifier = Modifier.fillMaxWidth(),
-            text = stringResource(R.string.errorEmail),
+            text = errorTextEmail,
             color = MaterialTheme.colorScheme.error
          )}
       },
@@ -195,32 +248,35 @@ fun InputNameMailPhone(
          if (isErrorEmail)
             Icon(
                Icons.Filled.Error,
-               contentDescription = stringResource(R.string.errorEmail),
+               contentDescription = errorTextEmail,
                tint = MaterialTheme.colorScheme.error
             )
       },
    )
 
-   var isErrorPhone by remember { mutableStateOf(false) }
-   var isPhoneFocus by remember { mutableStateOf(false) }
+   var isErrorPhone by rememberSaveable { mutableStateOf(false) }
+   var isPhoneFocus by rememberSaveable { mutableStateOf(false) }
+   var errorTextPhone by rememberSaveable { mutableStateOf("") }
    OutlinedTextField(
-      modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth()
-         .onFocusChanged {
-            if(!it.isFocused && isPhoneFocus) {
-               // user is leaving textfield
-               isErrorPhone = validatePhone(phone)
-               logDebug("ok>Test", "user leaving phone textfield isErrorPhone $isErrorPhone")
+      modifier = Modifier
+         .padding(horizontal = 8.dp)
+         .fillMaxWidth()
+         .onFocusChanged { focusState ->
+            if (!focusState.isFocused && isPhoneFocus) {
+               val(e,t) = validatePhone(phone, textPhone)
+               isErrorPhone = e
+               errorTextPhone = t
             }
-            isPhoneFocus = it.isFocused
+            isPhoneFocus = focusState.isFocused
          },
       value = phone ?: "",
       onValueChange = { onPhoneChange(it) }, // Event ↑
-      label = { Text(text = stringResource( R.string.phone)) },
+      label = { Text(text = textPhone) },
       textStyle = MaterialTheme.typography.bodyLarge,
       leadingIcon = {
          Icon(
             imageVector = Icons.Outlined.Phone,
-            contentDescription = "Phone")
+            contentDescription = textPhone)
       },
       singleLine = true,
       keyboardOptions = KeyboardOptions(
@@ -230,9 +286,10 @@ fun InputNameMailPhone(
       // check when keyboard action is clicked
       keyboardActions = KeyboardActions(
          onDone = {
-            isErrorPhone = validatePhone(phone)
-            if(!isErrorEmail && !isErrorPhone)
-               focusManager.clearFocus() // close keyboard
+            val(e,t) = validatePhone(phone, textPhone)
+            isErrorPhone = e
+            errorTextPhone = t
+            if(!isErrorPhone) focusManager.clearFocus() // close keyboard
          }
       ),
       isError = isErrorPhone,
@@ -240,7 +297,7 @@ fun InputNameMailPhone(
          if (isErrorPhone) {
             Text(
                modifier = Modifier.fillMaxWidth(),
-               text = "Telefonummer ist unzulässig",
+               text = errorTextPhone,
                color = MaterialTheme.colorScheme.error
             )
          }
@@ -249,27 +306,72 @@ fun InputNameMailPhone(
          if (isErrorPhone)
             Icon(
                imageVector = Icons.Filled.Error,
-               contentDescription = "Telefonummer ist unzulässig",
+               contentDescription = errorTextPhone,
                tint = MaterialTheme.colorScheme.error
             )
       },
    )
 }
 
-fun validateEmail(email: String?): Boolean{
-   email?.let {
-      val isError = ! android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-      // logDebug("ok>Validation Email   .", "$email isError $isError")
-      return isError
+fun isNameTooShort(
+   name: String,
+   charMin: Int,
+   text: String,
+): Pair<Boolean, String> {
+   var localErrorText = ""
+   // length < charMin
+   var localError = name.isEmpty() || name.length < charMin
+   if (localError) {
+      localErrorText =
+         "$text ${name.length} Zeichen < min. $charMin Zeichen!"
+      logDebug("tag", localErrorText)
    }
-   return false
+   return Pair(localError, localErrorText)
 }
 
-fun validatePhone(phone: String?): Boolean {
-   phone?.let {
-      val isError = ! android.util.Patterns.PHONE.matcher(phone).matches()
-      // logDebug("ok>Validation Phone   .", "$phone isError $isError")
-      return isError
+fun isNameTooLong(
+   name: String,
+   charMax: Int,
+   text: String,
+): Pair<Boolean, String> {
+   var localErrorText = ""
+   // length > charMax
+   val localError = name.length > charMax
+   if (localError) {
+      localErrorText =
+         "$text ${name.length} Zeichen > max. $charMax Zeichen!"
    }
-   return false
+   return Pair(localError, localErrorText)
+}
+
+fun validateEmail(
+   email: String?,
+   textEmail:String
+): Pair<Boolean,String> {
+   var localErrorText = ""
+   var localError = false
+   email?.let {
+      localError = ! android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches()
+      if (localError) {
+         localErrorText = "$textEmail ist unzulässig!"
+         logDebug("tag", localErrorText)
+      }
+   }
+   return Pair(localError, localErrorText)
+}
+
+fun validatePhone(
+   phone: String?,
+   textPhone:String
+): Pair<Boolean,String> {
+   var localErrorText = ""
+   var localError = false
+   phone?.let {
+      localError = ! android.util.Patterns.PHONE.matcher(it).matches()
+      if (localError) {
+         localErrorText = "$textPhone ist unzulässig!"
+         logDebug("tag", localErrorText)
+      }
+   }
+   return Pair(localError, localErrorText)
 }
