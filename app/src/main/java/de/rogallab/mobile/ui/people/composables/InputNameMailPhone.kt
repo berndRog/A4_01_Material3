@@ -42,9 +42,8 @@ fun InputNameMailPhone(
    onPhoneChange: (String) -> Unit,          // Event ↑
 
 ) {
-   val tag = "ok>InputNameMailPhone ."
-
-   val context = LocalContext.current
+// val tag = "ok>InputNameMailPhone ."
+// val context = LocalContext.current
    val focusManager = LocalFocusManager.current
 
    val textFirstName = stringResource(R.string.firstName)
@@ -320,11 +319,11 @@ fun isNameTooShort(
 ): Pair<Boolean, String> {
    var localErrorText = ""
    // length < charMin
-   var localError = name.isEmpty() || name.length < charMin
+   val localError = name.isEmpty() || name.length < charMin
    if (localError) {
       localErrorText =
          "$text ${name.length} Zeichen < min. $charMin Zeichen!"
-      logDebug("tag", localErrorText)
+      logDebug("ok>validateName", localErrorText)
    }
    return Pair(localError, localErrorText)
 }
@@ -340,6 +339,7 @@ fun isNameTooLong(
    if (localError) {
       localErrorText =
          "$text ${name.length} Zeichen > max. $charMax Zeichen!"
+      logDebug("ok>validateName", localErrorText)
    }
    return Pair(localError, localErrorText)
 }
@@ -354,7 +354,7 @@ fun validateEmail(
       localError = ! android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches()
       if (localError) {
          localErrorText = "$textEmail ist unzulässig!"
-         logDebug("tag", localErrorText)
+         logDebug("ok>validateEmail", localErrorText)
       }
    }
    return Pair(localError, localErrorText)
@@ -370,7 +370,7 @@ fun validatePhone(
       localError = ! android.util.Patterns.PHONE.matcher(it).matches()
       if (localError) {
          localErrorText = "$textPhone ist unzulässig!"
-         logDebug("tag", localErrorText)
+         logDebug("ok>validatePhone", localErrorText)
       }
    }
    return Pair(localError, localErrorText)
