@@ -156,11 +156,11 @@ fun InputNameMailPhone(
          errorTextLastName = t
 
       },
-      label = { Text(text = stringResource(R.string.lastName)) },
+      label = { Text(text = lastName) },
       textStyle = MaterialTheme.typography.bodyLarge,
       leadingIcon = {
          Icon(imageVector = Icons.Outlined.Person,
-            contentDescription = stringResource(R.string.lastName))
+            contentDescription = lastName )
       },
       singleLine = true,
       keyboardOptions = KeyboardOptions(
