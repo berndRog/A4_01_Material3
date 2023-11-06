@@ -18,17 +18,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.getString
 import de.rogallab.mobile.R
 import de.rogallab.mobile.utilities.logDebug
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputNameMailPhone(
    firstName: String,                        // State ↓
@@ -39,10 +43,9 @@ fun InputNameMailPhone(
    onEmailChange: (String) -> Unit,          // Event ↑
    phone: String?,                           // State ↓
    onPhoneChange: (String) -> Unit,          // Event ↑
-
 ) {
 // val tag = "ok>InputNameMailPhone ."
-// val context = LocalContext.current
+   val context = LocalContext.current
    val focusManager = LocalFocusManager.current
 
    val textFirstName = stringResource(R.string.firstName)
@@ -61,7 +64,8 @@ fun InputNameMailPhone(
          .fillMaxWidth()
          .onFocusChanged { focusState ->
             if (!focusState.isFocused && isFirstNameFocus) {
-               val (e, t) = isNameTooShort(firstName, charMin, textFirstName)
+               val (e, t) = isNameTooShort(firstName, charMin,
+                  getString(context,R.string.errorFirstNameTooShort))
                isErrorFirstName = e
                errorTextFirstName = t
             }
@@ -70,7 +74,8 @@ fun InputNameMailPhone(
       value = firstName,                 // State ↓
       onValueChange = {
          onFirstNameChange(it)           // Event ↑
-         val (e, t) = isNameTooLong(it, charMax, textFirstName)
+         val (e, t) = isNameTooLong(it, charMax,
+            getString(context,R.string.errorFirstNameTooLong))
          isErrorFirstName = e
          errorTextFirstName = t
       },
@@ -86,16 +91,18 @@ fun InputNameMailPhone(
       ),
       keyboardActions = KeyboardActions(
          onNext = {
-            val (e, t) = isNameTooShort(firstName, charMin, textFirstName)
+            val (e, t) = isNameTooShort(firstName, charMin,
+               getString(context,R.string.errorFirstNameTooShort))
             isErrorFirstName = e
             errorTextFirstName = t
             if(!isErrorFirstName) {
-               val (e2, t2) = isNameTooLong(firstName, charMax, textFirstName)
+               val (e2, t2) = isNameTooLong(firstName, charMax,
+                  getString(context,R.string.errorFirstNameTooLong))
                isErrorFirstName = e2
                errorTextFirstName = t2
             }
-            if(!isErrorFirstName)
-               focusManager.moveFocus(FocusDirection.Down)
+            if(!isErrorFirstName) focusManager.moveFocus(FocusDirection.Down)
+
          }
       ),
       isError = isErrorFirstName,
@@ -133,7 +140,8 @@ fun InputNameMailPhone(
          .fillMaxWidth()
          .onFocusChanged { focusState ->
             if (!focusState.isFocused && isLastNameFocus) {
-               val (e, t) = isNameTooShort(lastName, charMin, textLastName)
+               val (e, t) = isNameTooShort(lastName, charMin,
+                  getString(context,R.string.errorFirstNameTooShort))
                isErrorLastName = e
                errorTextLastName = t
             }
@@ -142,7 +150,8 @@ fun InputNameMailPhone(
       value = lastName,                  // State ↓
       onValueChange = {
          onLastNameChange(it)            // Event ↑
-         val (e, t) = isNameTooLong(it, charMax, textLastName)
+         val (e, t) = isNameTooLong(it, charMax,
+            getString(context,R.string.errorFirstNameTooLong))
          isErrorLastName = e
          errorTextLastName = t
 
@@ -159,11 +168,13 @@ fun InputNameMailPhone(
       ),
       keyboardActions = KeyboardActions(
          onNext = {
-            val (e, t) = isNameTooShort(lastName, charMin, textLastName)
+            val (e, t) = isNameTooShort(lastName, charMin,
+               getString(context,R.string.errorLastNameTooShort))
             isErrorLastName = e
             errorTextLastName = t
             if(!isErrorLastName) {
-               val (e2, t2) = isNameTooLong(lastName, charMax, textLastName)
+               val (e2, t2) = isNameTooLong(lastName, charMax,
+                  getString(context,R.string.errorFirstNameTooLong))
                isErrorLastName = e2
                errorTextLastName = t2
             }
@@ -205,7 +216,7 @@ fun InputNameMailPhone(
          .fillMaxWidth()
          .onFocusChanged { focusState ->
             if (!focusState.isFocused && isEmailFocus) {
-               val(e,t) = validateEmail(email, textEmail)
+               val (e, t) = validateEmail(email, getString(context,R.string.errorEmail))
                isErrorEmail = e
                errorTextEmail = t
             }
@@ -228,7 +239,7 @@ fun InputNameMailPhone(
       // check if keyboard action is clicked
       keyboardActions = KeyboardActions(
          onNext = {
-            val(e,t) = validateEmail(email, textEmail)
+            val(e,t) = validateEmail(email, getString(context,R.string.errorEmail))
             isErrorEmail = e
             errorTextEmail = t
             if(!isErrorEmail) focusManager.moveFocus(FocusDirection.Down)
@@ -261,7 +272,7 @@ fun InputNameMailPhone(
          .fillMaxWidth()
          .onFocusChanged { focusState ->
             if (!focusState.isFocused && isPhoneFocus) {
-               val(e,t) = validatePhone(phone, textPhone)
+               val (e, t) = validatePhone(phone, getString(context,R.string.errorEmail))
                isErrorPhone = e
                errorTextPhone = t
             }
@@ -284,7 +295,7 @@ fun InputNameMailPhone(
       // check when keyboard action is clicked
       keyboardActions = KeyboardActions(
          onDone = {
-            val(e,t) = validatePhone(phone, textPhone)
+            val(e,t) = validatePhone(phone, getString(context,R.string.errorPhone))
             isErrorPhone = e
             errorTextPhone = t
             if(!isErrorPhone) focusManager.clearFocus() // close keyboard
@@ -314,14 +325,13 @@ fun InputNameMailPhone(
 fun isNameTooShort(
    name: String,
    charMin: Int,
-   text: String,
+   text: String
 ): Pair<Boolean, String> {
    var localErrorText = ""
    // length < charMin
    val localError = name.isEmpty() || name.length < charMin
    if (localError) {
-      localErrorText =
-         "$text ${name.length} Zeichen < min. $charMin Zeichen!"
+      localErrorText = text
       logDebug("ok>validateName", localErrorText)
    }
    return Pair(localError, localErrorText)
@@ -336,8 +346,7 @@ fun isNameTooLong(
    // length > charMax
    val localError = name.length > charMax
    if (localError) {
-      localErrorText =
-         "$text ${name.length} Zeichen > max. $charMax Zeichen!"
+      localErrorText = text
       logDebug("ok>validateName", localErrorText)
    }
    return Pair(localError, localErrorText)
@@ -345,14 +354,14 @@ fun isNameTooLong(
 
 fun validateEmail(
    email: String?,
-   textEmail:String
+   text:String
 ): Pair<Boolean,String> {
    var localErrorText = ""
    var localError = false
    email?.let {
       localError = ! android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches()
       if (localError) {
-         localErrorText = "$textEmail ist unzulässig!"
+         localErrorText = text
          logDebug("ok>validateEmail", localErrorText)
       }
    }
@@ -361,14 +370,14 @@ fun validateEmail(
 
 fun validatePhone(
    phone: String?,
-   textPhone:String
+   text:String
 ): Pair<Boolean,String> {
    var localErrorText = ""
    var localError = false
    phone?.let {
       localError = ! android.util.Patterns.PHONE.matcher(it).matches()
       if (localError) {
-         localErrorText = "$textPhone ist unzulässig!"
+         localErrorText = text
          logDebug("ok>validatePhone", localErrorText)
       }
    }
