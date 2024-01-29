@@ -20,8 +20,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import de.rogallab.mobile.R
-import de.rogallab.mobile.ui.people.composables.InputNameMailPhone
-
+import de.rogallab.mobile.ui.people.composables.InputMail
+import de.rogallab.mobile.ui.people.composables.InputName
+import de.rogallab.mobile.ui.people.composables.InputPhone
 import de.rogallab.mobile.utilities.logDebug
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,7 +31,6 @@ fun PersonInputScreen(
    // 3) create a viewModel as default value
    viewModel: PeopleViewModel = viewModel()
 ) {
-
    val tag = "ok>PersonInputScreen  ."
 
    Column(
@@ -38,7 +38,6 @@ fun PersonInputScreen(
          .fillMaxWidth()
          .verticalScroll(state = rememberScrollState())
    ) {
-
       TopAppBar(
          title = { Text(stringResource(R.string.person_input)) },
          navigationIcon = {
@@ -53,18 +52,30 @@ fun PersonInputScreen(
             }
          }
       )
-
-      InputNameMailPhone(
-         firstName = viewModel.firstName,                         // State ↓
-         onFirstNameChange = { viewModel.onFirstNameChange(it) }, // Event ↑
-         lastName = viewModel.lastName,                           // State ↓
-         // instead of using a function inside a lambda
-         // a function reference can be used
-         onLastNameChange = viewModel::onLastNameChange,          // Event ↑
-         email = viewModel.email,                                 // State ↓
-         onEmailChange = viewModel::onEmailChange,                // Event ↑
-         phone = viewModel.phone,                                 // State ↓
-         onPhoneChange = viewModel::onPhoneChange,                // Event ↑
+      // InputName(
+      //    name = viewModel.firstName,                         // State ↓
+      //    onNameChange = { viewModel.onFirstNameChange(it) }, // Event ↑
+      //    label = stringResource(R.string.firstName)
+      // )
+      // instead of using a function inside a lambda
+      // a function reference can be used
+      InputName(
+         name = viewModel.firstName,                  // State ↓
+         onNameChange = viewModel::onFirstNameChange, // Event ↑
+         label = stringResource(R.string.firstName)   // State ↓
+      )
+      InputName(
+         name = viewModel.lastName,                  // State ↓
+         onNameChange = viewModel::onLastNameChange, // Event ↑
+         label = stringResource(R.string.lastName)   // State ↓
+      )
+      InputMail(
+         email = viewModel.email,                    // State ↓
+         onEmailChange = viewModel::onEmailChange    // Event ↑
+      )
+      InputPhone(
+         phone = viewModel.phone,                    // State ↓
+         onPhoneChange = viewModel::onPhoneChange    // Event ↑
       )
 
       Button(
@@ -84,5 +95,4 @@ fun PersonInputScreen(
          )
       }
    }
-
 }
