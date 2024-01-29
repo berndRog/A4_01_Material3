@@ -1,5 +1,6 @@
 package de.rogallab.mobile.ui.people.composables
 
+import android.content.Context
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -32,17 +34,15 @@ import de.rogallab.mobile.ui.people.base.validateEmail
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun InputMail(
+fun InputEmail(
    email: String?,                           // State ↓
    onEmailChange: (String) -> Unit,          // Event ↑
 ) {
-// val tag = "ok>InputNameMailPhone ."
-
+   val context: Context = LocalContext.current
    val focusManager: FocusManager = LocalFocusManager.current
    val keyboardController = LocalSoftwareKeyboardController.current
 
    val label = stringResource(R.string.email)
-   val errorMessage = stringResource(R.string.errorEmail)
 
    var isError by rememberSaveable { mutableStateOf(false) }
    var isFocus by rememberSaveable { mutableStateOf(false) }
@@ -54,7 +54,9 @@ fun InputMail(
          .fillMaxWidth()
          .onFocusChanged { focusState ->
             if (!focusState.isFocused && isFocus) {
-               isError = validateEmail(email)
+               val(e,t) = validateEmail(context, email)
+               isError = e
+               errorText = t
             }
             isFocus = focusState.isFocused
          },
@@ -77,7 +79,9 @@ fun InputMail(
       keyboardActions = KeyboardActions(
          onNext = {
             keyboardController?.hide()
-            isError = validateEmail(email)
+            val(e,t) = validateEmail(context, email)
+            isError = e
+            errorText = t
             if (!isError) {
                keyboardController?.hide()
                focusManager.moveFocus(FocusDirection.Down)

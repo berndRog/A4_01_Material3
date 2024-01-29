@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import de.rogallab.mobile.R
-import de.rogallab.mobile.ui.people.composables.InputMail
+import de.rogallab.mobile.ui.people.composables.InputEmail
 import de.rogallab.mobile.ui.people.composables.InputName
 import de.rogallab.mobile.ui.people.composables.InputPhone
 import de.rogallab.mobile.utilities.logDebug
@@ -62,14 +62,18 @@ fun PersonInputScreen(
       InputName(
          name = viewModel.firstName,                  // State ↓
          onNameChange = viewModel::onFirstNameChange, // Event ↑
-         label = stringResource(R.string.firstName)   // State ↓
+         label = stringResource(R.string.firstName),   // State ↓
+         errorTooShort = stringResource(R.string.errorFirstNameTooShort),
+         errorTooLong = stringResource(R.string.errorFirstNameTooLong)
       )
       InputName(
          name = viewModel.lastName,                  // State ↓
          onNameChange = viewModel::onLastNameChange, // Event ↑
-         label = stringResource(R.string.lastName)   // State ↓
+         label = stringResource(R.string.lastName),   // State ↓
+         errorTooShort = stringResource(R.string.errorLastNameTooShort),
+         errorTooLong = stringResource(R.string.errorLastNameTooLong)
       )
-      InputMail(
+      InputEmail(
          email = viewModel.email,                    // State ↓
          onEmailChange = viewModel::onEmailChange    // Event ↑
       )

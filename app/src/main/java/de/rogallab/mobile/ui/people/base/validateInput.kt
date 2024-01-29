@@ -1,6 +1,7 @@
 package de.rogallab.mobile.ui.people.base
 
 import android.content.Context
+import androidx.compose.ui.res.stringResource
 import de.rogallab.mobile.R
 
 fun isNameTooShort(name: String, charMin: Int): Boolean =
@@ -8,22 +9,6 @@ fun isNameTooShort(name: String, charMin: Int): Boolean =
 
 fun isNameTooLong(name: String, charMax: Int): Boolean =
    name.length > charMax
-
-fun validateEmail(email: String?): Boolean =
-   email?.let {
-      when(android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
-         true -> false // email ok
-         false -> true // email with an error
-      }
-   } ?: false
-
-fun validatePhone(phone: String?): Boolean =
-   phone?.let {
-      when(android.util.Patterns.PHONE.matcher(it).matches()) {
-         true -> false   // email ok
-         false -> true   // email with an error
-      }
-   } ?: false
 
 fun validateName(
    context: Context,
@@ -66,4 +51,35 @@ fun validateNameTooLong(
    } else {
       return Pair(false, "")
    }
+}
+
+fun validateEmail(
+   context: Context,
+   email: String?
+): Pair<Boolean, String> {
+   val errorMessage = context.getString(R.string.errorEmail)
+   val result = email?.let {
+      when(android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
+         true -> false // email ok
+         false -> true // email with an error
+      }
+   } ?: false
+
+   if (result) return Pair(true, errorMessage)
+   else        return Pair(false, "")
+}
+
+fun validatePhone(
+   context: Context,
+   phone: String?
+): Pair<Boolean, String> {
+   val errorMessage = context.getString(R.string.errorPhone)
+   val result = phone?.let {
+      when (android.util.Patterns.PHONE.matcher(it).matches()) {
+         true -> false   // phone number ok
+         false -> true   // phone number with an error
+      }
+   } ?: false
+   if (result) return Pair(true, errorMessage)
+   else        return Pair(false, "")
 }
