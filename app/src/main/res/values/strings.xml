@@ -1,6 +1,8 @@
 <resources>
   <string name="app_name">Compose Styles</string>
   <string name="person_input">Neue Person</string>
+  <string name="person_detail">Person bearbeiten</string>
+  <string name="people_list">Personen</string>
   <string name="firstName">Vorname</string>
   <string name="lastName">Nachname</string>
   <string name="email">E-Mail</string>
@@ -8,10 +10,8 @@
   <string name="errorCharMin">2</string>
   <string name="errorCharMax">16</string>
   <string name="okChars">2-16 Zeichen sind erlaubt</string>
-  <string name="errorFirstNameTooShort">Vorname ist zu kurz</string>
-  <string name="errorFirstNameTooLong">Vorname ist zu lang</string>
-  <string name="errorLastNameTooShort">Nachname ist zu kurz</string>
-  <string name="errorLastNameTooLong">Nachname ist zu lang</string>
+  <string name="errorNameTooShort">Name ist zu kurz</string>
+  <string name="errorNameTooLong">Name ist zu lang</string>
   <string name="errorEmail">E-Mail Adresse ist unzulässig</string>
   <string name="errorPhone">Telefonnumer ist unzulässig</string>
   <string name="send">Senden</string>
