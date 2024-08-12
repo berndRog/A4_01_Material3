@@ -15,6 +15,6 @@ dependencyResolutionManagement {
    }
 }
 
-rootProject.name = "A3_05_Material3"
+rootProject.name = "A4_01_Material3"
 include(":app")
  

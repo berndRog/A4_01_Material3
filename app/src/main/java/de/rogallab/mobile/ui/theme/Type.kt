@@ -16,6 +16,7 @@ val provider = GoogleFont.Provider(
    certificates = R.array.com_google_android_gms_fonts_certs
 )
 
+// GoogleFont Roboto
 val bodyFontFamily = FontFamily(
    Font(
       googleFont = GoogleFont("Roboto"),
@@ -30,19 +31,67 @@ val displayFontFamily = FontFamily(
    )
 )
 
+// GoogleFont IBM Plex Serif
+//val bodyFontFamily = FontFamily(
+//   Font(
+//      googleFont = GoogleFont("IBM Plex Serif"),
+//      fontProvider = provider,
+//   )
+//)
+//
+//val displayFontFamily = FontFamily(
+//   Font(
+//      googleFont = GoogleFont("IBM Plex Serif"),
+//      fontProvider = provider,
+//   )
+//)
+
 // Default Material 3 typography values
 val baseline = Typography()
 
 val AppTypography = Typography(
-   displayLarge = baseline.displayLarge.copy(fontFamily = displayFontFamily),
-   displayMedium = baseline.displayMedium.copy(fontFamily = displayFontFamily),
-   displaySmall = baseline.displaySmall.copy(fontFamily = displayFontFamily),
-   headlineLarge = baseline.headlineLarge.copy(fontFamily = displayFontFamily),
-   headlineMedium = baseline.headlineMedium.copy(fontFamily = displayFontFamily),
-   headlineSmall = baseline.headlineSmall.copy(fontFamily = displayFontFamily),
-   titleLarge = baseline.titleLarge.copy(fontFamily = displayFontFamily),
-   titleMedium = baseline.titleMedium.copy(fontFamily = displayFontFamily),
-   titleSmall = baseline.titleSmall.copy(fontFamily = displayFontFamily),
+   displayLarge = baseline.displayLarge.copy(
+      fontFamily = displayFontFamily,
+   ),
+   displayMedium = baseline.displayMedium.copy(
+      fontFamily = displayFontFamily
+   ),
+   displaySmall = baseline.displaySmall.copy(
+      fontFamily = displayFontFamily
+   ),
+
+   headlineLarge = baseline.headlineLarge.copy(
+      fontFamily = displayFontFamily,
+      fontSize   = 36.sp, // 32.sp,
+      lineHeight = 40.sp  // 40.sp,
+   ),
+   headlineMedium = baseline.headlineMedium.copy(
+      fontFamily = displayFontFamily,
+      fontSize   = 30.sp, // 28.sp,
+      lineHeight = 36.sp  // 36.sp,
+   ),
+   headlineSmall = baseline.headlineSmall.copy(
+      fontFamily = displayFontFamily,
+      fontSize   = 24.sp, // 24.sp,
+      lineHeight = 32.sp  // 32.sp
+   ),
+
+   titleLarge = baseline.titleLarge.copy(
+      fontFamily = displayFontFamily,
+      fontSize   = 26.sp, // 22.sp,
+      lineHeight = 28.sp  // 28.sp,
+   ),
+   titleMedium = baseline.titleMedium.copy(
+      fontFamily = displayFontFamily,
+      fontSize   = 20.sp, // 16.sp,
+      lineHeight = 24.sp  // 24.sp,
+   ),
+   titleSmall = baseline.titleSmall.copy(
+      fontFamily = displayFontFamily,
+      fontSize   = 18.sp, // 14.sp,
+      lineHeight = 20.sp  // 20.sp,
+   ),
+
    bodyLarge = baseline.bodyLarge.copy(
       fontFamily = bodyFontFamily,
       fontSize   = 18.sp, // 16.sp,
@@ -58,9 +107,22 @@ val AppTypography = Typography(
       fontSize   = 14.sp, // 12.sp,
       lineHeight = 16.sp  // 16.sp,
    ),
-   labelLarge = baseline.labelLarge.copy(fontFamily = bodyFontFamily),
-   labelMedium = baseline.labelMedium.copy(fontFamily = bodyFontFamily),
-   labelSmall = baseline.labelSmall.copy(fontFamily = bodyFontFamily),
+
+   labelLarge = baseline.labelLarge.copy(
+      fontFamily = bodyFontFamily,
+      fontSize   = 16.sp, // 14.sp,
+      lineHeight = 22.sp  // 20.sp,
+   ),
+   labelMedium = baseline.labelMedium.copy(
+      fontFamily = bodyFontFamily,
+      fontSize   = 14.sp, // 12.sp,
+      lineHeight = 16.sp  // 16.sp,
+   ),
+   labelSmall = baseline.labelSmall.copy(
+      fontFamily = bodyFontFamily,
+      fontSize   = 14.sp, // 11.sp,
+      lineHeight = 16.sp  // 16.sp,
+   ),
 )
 
 

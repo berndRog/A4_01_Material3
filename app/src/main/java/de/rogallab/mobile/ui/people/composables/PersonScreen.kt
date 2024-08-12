@@ -39,9 +39,7 @@ fun PersonScreen(
 
    Column(modifier = Modifier
       .fillMaxSize()
-      .background(MaterialTheme.colorScheme.surface)
       .padding(horizontal = 8.dp)
-      .imePadding() // padding for the bottom for the IME
    ) {
 
       TopAppBar(
@@ -73,13 +71,14 @@ fun PersonScreen(
             // viewModel.createPerson()
          },
          modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
-         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = contentColorFor(MaterialTheme.colorScheme.primary)
-         )) {
+//         colors = ButtonDefaults.buttonColors(
+//            containerColor = MaterialTheme.colorScheme.primary,
+//            contentColor = contentColorFor(MaterialTheme.colorScheme.primary)
+//
+      ) {
          Text(
             text = stringResource(R.string.save),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.titleLarge
          )
       }
       Button(
@@ -94,7 +93,7 @@ fun PersonScreen(
          )) {
          Text(
             text = stringResource(R.string.save),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.titleLarge
          )
       }
       Button(
@@ -110,7 +109,7 @@ fun PersonScreen(
       ) {
          Text(
             text = stringResource(R.string.save),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.titleLarge
          )
       }
    } // Column
