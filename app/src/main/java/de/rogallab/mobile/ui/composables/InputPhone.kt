@@ -1,7 +1,6 @@
-package de.rogallab.mobile.ui.people.composables
+package de.rogallab.mobile.ui.composables
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -14,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -25,22 +23,17 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import de.rogallab.mobile.R
-import de.rogallab.mobile.ui.errors.validatePhone
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputPhone(
-   phone: String?,                           // State ↓
-   onPhoneChange: (String) -> Unit,          // Event ↑
+   phone: String?,                                    // State ↓
+   onPhoneChange: (String) -> Unit,                   // Event ↑
+   validatePhone: (String?) -> Pair<Boolean, String>, // Event ↑
+   label: String  = stringResource(R.string.phone),        // State ↓
 ) {
-   val label = stringResource(R.string.phone)
 
-   // Immediate Feedback: error messages from string resources
-   // Cache the string resource to avoid redundant lookups.
-   var resourceError = stringResource(R.string.errorPhone)
-   val errorPhone = remember { resourceError }
    var isError by rememberSaveable { mutableStateOf(false) }
    var errorText by rememberSaveable { mutableStateOf("") }
 
@@ -50,7 +43,7 @@ fun InputPhone(
 
    // Reusable Validation Functions: Validate the input when it changes
    val validate: (String?) -> Unit = { input ->
-      val (e, t) = validatePhone(input, errorPhone)
+      val (e, t) = validatePhone(input)
       isError = e
       errorText = t
    }

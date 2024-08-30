@@ -15,7 +15,7 @@ class PeopleRepository(
       return try {
          ResultData.Success(dataStore.selectAll())
       } catch (t: Throwable) {
-         ResultData.Error(t)
+         ResultData.Failure(t)
       }
    }
 
@@ -23,7 +23,7 @@ class PeopleRepository(
       return try {
          ResultData.Success(dataStore.selectWhere(predicate))
       } catch (t: Throwable) {
-         ResultData.Error(t)
+         ResultData.Failure(t)
       }
    }
 
@@ -31,7 +31,7 @@ class PeopleRepository(
       return try {
          ResultData.Success(dataStore.findById(id))
       } catch (t: Throwable) {
-         ResultData.Error(t)
+         ResultData.Failure(t)
       }
    }
 
@@ -39,7 +39,7 @@ class PeopleRepository(
       return try {
          ResultData.Success(dataStore.findBy(predicate))
       } catch (t: Throwable) {
-         ResultData.Error(t)
+         ResultData.Failure(t)
       }
    }
 
@@ -48,7 +48,7 @@ class PeopleRepository(
          dataStore.insert(person)
          ResultData.Success(Unit)
       } catch (t: Throwable) {
-         ResultData.Error(t)
+         ResultData.Failure(t)
       }
    }
 
@@ -57,7 +57,7 @@ class PeopleRepository(
          dataStore.update(person)
          ResultData.Success(Unit)
       } catch (t: Throwable) {
-         ResultData.Error(t)
+         ResultData.Failure(t)
       }
    }
 
@@ -66,7 +66,7 @@ class PeopleRepository(
          dataStore.delete(id)
          ResultData.Success(Unit)
       } catch (t: Throwable) {
-         ResultData.Error(t)
+         ResultData.Failure(t)
       }
    }
 
@@ -75,7 +75,7 @@ class PeopleRepository(
          dataStore.readDataStore()
          ResultData.Success(Unit)
       } catch (t: Throwable) {
-         ResultData.Error(t)
+         ResultData.Failure(t)
       }
    }
    override fun writeDataStore(): ResultData<Unit> {
@@ -83,7 +83,7 @@ class PeopleRepository(
          dataStore.writeDataStore()
          ResultData.Success(Unit)
       } catch (t: Throwable) {
-         ResultData.Error(t)
+         ResultData.Failure(t)
       }
    }
 

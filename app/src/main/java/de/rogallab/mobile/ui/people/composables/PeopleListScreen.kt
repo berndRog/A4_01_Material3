@@ -1,15 +1,17 @@
-package de.rogallab.mobile.ui.features.people.composables
+package de.rogallab.mobile.ui.people.composables
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeGestures
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,11 +41,9 @@ fun PeopleListScreen(
    viewModel: PeopleViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
 ) {
    val tag = "[PeopleListScreen]"
-
    // observe the peopleUiStateFlow in the ViewModel
    // notify the UI when the state changes
    val peopleUiState by viewModel.peopleUiStateFlow.collectAsStateWithLifecycle()
-
    // read all people from repository, when the screen is created
    LaunchedEffect(Unit) {
       logVerbose(tag, "readPeople()")
@@ -51,17 +51,21 @@ fun PeopleListScreen(
    }
 
    val screenTitle = stringResource(R.string.people_list)
+   val windowInsets = WindowInsets.systemBars
+      .add(WindowInsets.safeGestures)
 
    Column(
       modifier = Modifier
          .fillMaxSize()
+         .padding(windowInsets.asPaddingValues())
          .padding(horizontal = 8.dp)
    ) {
-
-      TopAppBar(  title = { Text(screenTitle) } )
+      TopAppBar(
+         title = { Text(screenTitle) }
+      )
 
       Row(
-         modifier = Modifier.padding(all = 8.dp),
+         modifier = Modifier.padding(end = 8.dp),
       ) {
          Spacer(modifier = Modifier.weight(0.8f))
 
@@ -74,10 +78,10 @@ fun PeopleListScreen(
             Icon(Icons.Default.Add, "Add a contact")
          }
       }
+
       LazyColumn(
          modifier = Modifier
             .padding(top = 16.dp)
-            .padding(horizontal = 16.dp),
       ) {
          items(
             items = peopleUiState.people,
@@ -96,6 +100,6 @@ fun PeopleListScreen(
                }
             )
          }
-      }
+      } // LazyColumn
    }
 }

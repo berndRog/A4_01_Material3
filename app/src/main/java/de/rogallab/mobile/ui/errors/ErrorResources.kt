@@ -2,7 +2,7 @@ package de.rogallab.mobile.ui.errors
 
 import de.rogallab.mobile.R
 
-class ErrorMessages(
+class ErrorResources(
    resourceProvider: ResourceProvider
 ) {
    val charMin: Int = resourceProvider.getString(R.string.errorCharMin).toInt()

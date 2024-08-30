@@ -7,6 +7,7 @@ import de.rogallab.mobile.domain.utilities.logVerbose
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
+import kotlin.random.Random
 
 class DataStore(
    private val _context: Context
@@ -76,6 +77,7 @@ class DataStore(
             // seed _people with some data
             seedData()
             logVerbose(TAG, "readDataStore: seedData people:${_people.size}")
+            write()
             return
          }
          // read json from a file and convert to a list of people
@@ -148,25 +150,25 @@ class DataStore(
          "Imhoff", "Jung", "Klein", "Lang", "Meier", "Neumann", "Olbrich", "Peters",
          "Quart", "Richter", "Schmidt", "Thormann", "Ulrich", "Vogel", "Wagner", "Xander",
          "Yakov", "Zander")
-//      val emailProvider = mutableListOf("gmail.com", "icloud.com", "outlook.com", "yahoo.com",
-//         "t-online.de", "gmx.de", "freenet.de", "mailbox.org", "yahoo.com", "web.de")
+      val emailProvider = mutableListOf("gmail.com", "icloud.com", "outlook.com", "yahoo.com",
+         "t-online.de", "gmx.de", "freenet.de", "mailbox.org", "yahoo.com", "web.de")
 
-//      val random = Random(0)
+      val random = Random(0)
       for (index in firstNames.indices) {
 //         var indexFirst = random.nextInt(firstNames.size)
 //         var indexLast = random.nextInt(lastNames.size)
          val firstName = firstNames[index]
          val lastName = lastNames[index]
-//         val email =
-//            "${firstName.lowercase(Locale.getDefault())}." +
-//               "${lastName.lowercase(Locale.getDefault())}@" +
-//               "${emailProvider.random()}"
-//         val phone =
-//            "0${random.nextInt(1234, 9999)} " +
-//               "${random.nextInt(100, 999)}-" +
-//               "${random.nextInt(10, 9999)}"
+         val email =
+            "${firstName.lowercase()}." +
+               "${lastName.lowercase()}@" +
+               "${emailProvider.random()}"
+         val phone =
+            "0${random.nextInt(1234, 9999)} " +
+               "${random.nextInt(100, 999)}-" +
+               "${random.nextInt(10, 9999)}"
 
-         val person = Person(firstName, lastName)
+         val person = Person(firstName, lastName, email, phone)
          _people.add(person)
       }
    }

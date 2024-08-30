@@ -1,7 +1,6 @@
-package de.rogallab.mobile.ui.people.composables
+package de.rogallab.mobile.ui.composables
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -25,11 +24,8 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.dp
-import de.rogallab.mobile.R
-import de.rogallab.mobile.ui.errors.validateName
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -47,20 +43,11 @@ Common input validation patterns in Jetpack Compose include:
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputName(
-   name: String,                        // State ↓
-   onNameChange: (String) -> Unit,      // Event ↑
-   label: String = "Name"
+   name: String,                                   // State ↓
+   onNameChange: (String) -> Unit,                 // Event ↑
+   label: String = "Name",                         // State ↓
+   validateName: (String) -> Pair<Boolean, String> // Event ↑
 ) {
-   // Immediate Feedback: error messages from string resources
-   // Cache the string resource to avoid redundant lookups.
-   val resourceMin = stringResource(id = R.string.errorCharMin).toInt()
-   val min = remember { resourceMin }
-   val resourceMax = stringResource(id = R.string.errorCharMax).toInt()
-   val max = remember { resourceMax }
-   val resourceTooShort = stringResource(id = R.string.errorNameTooShort)
-   val errorTooShort = remember { resourceTooShort }
-   var resourceTooLong = stringResource(R.string.errorNameTooLong)
-   val errorTooLong = remember { resourceTooLong }
    // local error state
    var isError by rememberSaveable { mutableStateOf(false) }
    var errorText by rememberSaveable { mutableStateOf("") }
@@ -68,19 +55,21 @@ fun InputName(
    var debounceJob: Job? by remember { mutableStateOf(null) }
    val coroutineScope = rememberCoroutineScope()
 
-   var isFocus by rememberSaveable { mutableStateOf(false) }
-   val focusManager: FocusManager = LocalFocusManager.current
-   val keyboardController = LocalSoftwareKeyboardController.current
-
    // Reusable Validation Functions: Validate the input when it changes
    val validate: (String) -> Unit = { input ->
-      val (e, t) = validateName(input, min, max, errorTooShort, errorTooLong)
+      val (e, t) = validateName(input)
       isError = e
       errorText = t
    }
 
+   var isFocus by rememberSaveable { mutableStateOf(false) }
+   val focusManager: FocusManager = LocalFocusManager.current
+   val keyboardController = LocalSoftwareKeyboardController.current
+
    OutlinedTextField(
-      modifier = Modifier.fillMaxWidth()
+      modifier = Modifier
+         .testTag("InputNameField") // Set the test tag here
+         .fillMaxWidth()
          .onFocusChanged { focusState ->
             if (!focusState.isFocused && isFocus) validate(name)
             isFocus = focusState.isFocused

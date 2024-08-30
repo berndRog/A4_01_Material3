@@ -24,6 +24,7 @@ fun PersonListItem(
    onClicked: (String) -> Unit,     // Event ↑
    onDeleted: (String) -> Unit      // Event ↑
 ) {
+
    Column {
 
       HorizontalDivider()

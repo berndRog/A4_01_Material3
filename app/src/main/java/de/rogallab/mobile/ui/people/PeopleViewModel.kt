@@ -9,7 +9,8 @@ import de.rogallab.mobile.domain.ResultData
 import de.rogallab.mobile.domain.entities.Person
 import de.rogallab.mobile.domain.utilities.logDebug
 import de.rogallab.mobile.domain.utilities.logError
-import de.rogallab.mobile.ui.navigation.NavEvent
+import de.rogallab.mobile.ui.errors.ErrorResources
+import de.rogallab.mobile.ui.errors.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,13 +21,24 @@ class PeopleViewModel(
 ): AndroidViewModel(application) {
 
    // we must fix this by using a dependency injection framework
-   private val _context = getApplication<Application>().applicationContext
+   private val _context = application.applicationContext
    private val _dataStore = DataStore(_context)
    private val _repository = PeopleRepository(_dataStore)
 
+   // get error resources from the context
+   private val _resourceProvider = ResourceProvider(_context)
+   private val _errorResources = ErrorResources(_resourceProvider)
+
+   // read dataStore when ViewModel is created
    init {
       logDebug(TAG, "init")
       _repository.readDataStore()
+   }
+   // write dataStore when ViewModel is cleared
+   override fun onCleared() {
+      logDebug(TAG, "onCleared()")
+      _repository.writeDataStore()
+      super.onCleared()
    }
 
    // Data Binding PeopleListScreen <=> PersonViewModel
@@ -43,11 +55,10 @@ class PeopleViewModel(
             }
             logDebug(TAG, "fetchPeople() people.size: ${peopleUiStateFlow.value.people.size}")
          }
-         is ResultData.Error -> {
+         is ResultData.Failure -> {
             val message = "Failed to fetch people ${resultData.throwable.localizedMessage}"
             logError(TAG, message)
          }
-         else -> Unit
       }
    }
 
@@ -84,12 +95,22 @@ class PeopleViewModel(
       logDebug(TAG, "createPerson")
       when (val resultData = _repository.create(_personUiStateFlow.value.person)) {
          is ResultData.Success -> fetchPeople()
-         is ResultData.Error -> {
+         is ResultData.Failure -> {
             val message = "Failed to create a person ${resultData.throwable.localizedMessage}"
             logError(TAG, message)
             // showOnError(message = message, navEvent = NavEvent.ToPeopleList)
          }
-         else -> Unit
+      }
+   }
+
+   fun updatePerson() {
+      logDebug(TAG, "updatePerson")
+      when(val resultData = _repository.update(_personUiStateFlow.value.person)) {
+         is ResultData.Success -> fetchPeople()
+         is ResultData.Failure -> {
+            val message = "Failed to update a person ${resultData.throwable.localizedMessage}"
+            logError(TAG, message)
+         }
       }
    }
 
@@ -97,12 +118,11 @@ class PeopleViewModel(
       logDebug(TAG, "removePerson: $personId")
       when(val resultData = _repository.remove(personId)) {
          is ResultData.Success -> fetchPeople()
-         is ResultData.Error -> {
+         is ResultData.Failure -> {
             val message = "Failed to remove a person ${resultData.throwable.localizedMessage}"
             logError(TAG, message)
             //showOnError(message = message, navEvent = NavEvent.ToPeopleList)
          }
-         else -> Unit
       }
    }
 
@@ -110,52 +130,73 @@ class PeopleViewModel(
       _personUiStateFlow.update { it.copy(person = Person()) }
    }
 
-   fun validate(
-      isInput: Boolean
-   ) {
+   fun validateName(name: String): Pair<Boolean, String> =
+      if (name.isEmpty() || name.length < _errorResources.charMin)
+         Pair(true, _errorResources.nameTooShort)
+      else if (name.length > _errorResources.charMax )
+         Pair(true, _errorResources.nameTooLong)
+      else
+         Pair(false, "")
+
+   fun validateEmail(email: String?): Pair<Boolean, String> {
+      email?.let {
+         when (android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
+            true -> return Pair(false, "") // email ok
+            false -> return Pair(true, _errorResources.emailInValid)
+         }
+      } ?: return Pair(false, "")
+   }
+
+   fun validatePhone(phone: String?): Pair<Boolean, String> {
+      phone?.let {
+         when (android.util.Patterns.PHONE.matcher(it).matches()) {
+            true -> return Pair(false,"")   // email ok
+            false -> return Pair(true, _errorResources.phoneInValid)
+         }
+      } ?: return Pair(false, "")
+   }
+
+
+   // validate all input fields after user finished input into the form
+   fun validate(isInput: Boolean) {
       // input is ok        -> add and navigate up
       // detail is ok       -> update and navigate up
       // is the is an error -> show error and stay on screen
-/*
-      val charMin = _errorMessages.charMin
-      val charMax = _errorMessages.charMax
+      val charMin = _errorResources.charMin
+      val charMax = _errorResources.charMax
 
       val person = _personUiStateFlow.value.person
+
       // firstName or lastName too short
       if (person.firstName.isEmpty() || person.firstName.length < charMin) {
-         showOnError(message = _errorMessages.nameTooShort, navEvent = null)
+         logError(TAG, _errorResources.nameTooShort)
       }
       else if (person.lastName.isEmpty() || person.lastName.length < charMin) {
-         showOnError(message = _errorMessages.nameTooShort, navEvent = null)
+         logError(TAG, _errorResources.nameTooShort)
       }
       else if (person.firstName.length > charMax) {
-         showOnError(message = _errorMessages.nameTooLong, navEvent = null)
+         logError(TAG, _errorResources.nameTooLong)
       }
       else if (person.lastName.length > charMax) {
-         showOnError(message = _errorMessages.nameTooLong, navEvent = null)
+         logError(TAG, _errorResources.nameTooLong)
       }
+
+      // email not valid
       else if (person.email != null &&
          !Patterns.EMAIL_ADDRESS.matcher(person.email).matches()) {
-         showOnError(message = _errorMessages.emailInValid, navEvent = null)
+         logError(TAG, _errorResources.emailInValid)
       }
+
+      // phone not valid
       else if (person.phone != null &&
          !Patterns.PHONE.matcher(person.phone).matches()) {
-         showOnError(message = _errorMessages.phoneInValid, navEvent = null)
+         logError(TAG,_errorResources.phoneInValid)
       }
       else {
+         // write data to repository
          if (isInput) this.createPerson()
          else         this.updatePerson()
-         onNavigateTo(NavEvent.ToPeopleList)
       }
- */
-   }
-
-   // lifecycle ViewModel
-   // onCleared() is called when the ViewModel is no longer used and will be destroyed
-   override fun onCleared() {
-      logDebug(TAG, "onCleared()")
-      _repository.writeDataStore()
-      super.onCleared()
    }
 
    companion object {
