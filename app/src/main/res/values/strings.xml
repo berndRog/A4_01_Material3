@@ -1,20 +1,20 @@
 <resources>
-  <string name="app_name">Compose Styles</string>
-  <string name="person_input">Neue Person</string>
-  <string name="person_detail">Person bearbeiten</string>
-  <string name="people_list">Personen</string>
-  <string name="firstName">Vorname</string>
-  <string name="lastName">Nachname</string>
-  <string name="email">E-Mail</string>
-  <string name="phone">Telefon</string>
+  <string name="person_input">Add person</string>
+  <string name="person_detail">Edit person</string>
+  <string name="people_list">People</string>
+  <string name="firstname">Firstname</string>
+  <string name="lastname">Lastname</string>
+  <string name="email">Email Address</string>
+  <string name="phone">Phone number</string>
   <string name="errorCharMin">2</string>
   <string name="errorCharMax">16</string>
-  <string name="okChars">2-16 Zeichen sind erlaubt</string>
-  <string name="errorNameTooShort">Name ist zu kurz</string>
-  <string name="errorNameTooLong">Name ist zu lang</string>
-  <string name="errorEmail">E-Mail Adresse ist unzulässig</string>
-  <string name="errorPhone">Telefonnumer ist unzulässig</string>
-  <string name="send">Senden</string>
-  <string name="save">Speichern</string>
-  <string name="back">Zurück</string>
+  <string name="errorFirstnameTooShort">Firstname is too short</string>
+  <string name="errorFirstnameTooLong">First name is too long</string>
+  <string name="errorLastNameTooShort">Last name is too short</string>
+  <string name="errorLastNameTooLong">Lastname is too long</string>
+  <string name="errorEmail">Email address is invalid</string>
+  <string name="errorPhone">Phone number is invalid</string>
+  <string name="send">Send</string>
+  <string name="save">Save</string>
+  <string name="back">Back</string>
 </resources>

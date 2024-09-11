@@ -1,4 +1,4 @@
-package de.rogallab.mobile.ui.errors
+package de.rogallab.mobile.ui
 
 import android.content.Context
 import android.graphics.drawable.Drawable

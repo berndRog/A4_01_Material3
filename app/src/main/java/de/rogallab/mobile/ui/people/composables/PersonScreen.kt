@@ -92,13 +92,13 @@ fun PersonScreen(
       InputName(
          name = personUiState.person.firstName,          // State ↓
          onNameChange = viewModel::onFirstNameChange,    // Event ↑
-         label = stringResource(R.string.firstName),              // State ↓
+         label = stringResource(R.string.firstname),              // State ↓
          validateName = viewModel::validateName,         // Event ↑
       )
       InputName(
          name = personUiState.person.lastName,           // State ↓
          onNameChange = viewModel::onLastNameChange,     // Event ↑
-         label = stringResource(R.string.lastName),             // State ↓
+         label = stringResource(R.string.lastname),      // State ↓
          validateName = viewModel::validateName,         // Event ↑
       )
       InputEmail(

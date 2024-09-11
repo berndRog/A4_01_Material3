@@ -10,7 +10,7 @@ import de.rogallab.mobile.domain.entities.Person
 import de.rogallab.mobile.domain.utilities.logDebug
 import de.rogallab.mobile.domain.utilities.logError
 import de.rogallab.mobile.ui.errors.ErrorResources
-import de.rogallab.mobile.ui.errors.ResourceProvider
+import de.rogallab.mobile.ui.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
