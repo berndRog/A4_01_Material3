@@ -10,8 +10,8 @@
   <string name="errorCharMax">16</string>
   <string name="errorFirstnameTooShort">Firstname is too short</string>
   <string name="errorFirstnameTooLong">First name is too long</string>
-  <string name="errorLastNameTooShort">Last name is too short</string>
-  <string name="errorLastNameTooLong">Lastname is too long</string>
+  <string name="errorLastnameTooShort">Last name is too short</string>
+  <string name="errorLastnameTooLong">Lastname is too long</string>
   <string name="errorEmail">Email address is invalid</string>
   <string name="errorPhone">Phone number is invalid</string>
   <string name="send">Send</string>

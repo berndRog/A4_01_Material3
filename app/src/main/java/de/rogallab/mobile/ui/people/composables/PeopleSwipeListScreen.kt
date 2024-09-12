@@ -62,12 +62,7 @@ fun PeopleSwipeListScreen(
    val activity = LocalContext.current as Activity
 
    // Back navigation
-   BackHandler(
-      enabled = true,
-      onBack = {
-         activity.finish()
-      }
-   )
+   BackHandler { activity.finish() }
 
    val screenTitle = stringResource(R.string.people_list)
    val windowInsets = WindowInsets.systemBars

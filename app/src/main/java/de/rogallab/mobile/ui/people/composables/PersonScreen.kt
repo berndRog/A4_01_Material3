@@ -1,5 +1,6 @@
 package de.rogallab.mobile.ui.people.composables
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -7,6 +8,8 @@ import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeGestures
 import androidx.compose.foundation.layout.systemBars
@@ -58,7 +61,7 @@ fun PersonScreen(
    if (!isInputMode) {
       id?.let { it: String ->
          LaunchedEffect(Unit) {
-            // viewModel.fetchPerson(it)
+            viewModel.fetchPerson(it)
          }
       } ?: run {
          logError(tag,"No id for person is given")
@@ -69,11 +72,13 @@ fun PersonScreen(
       .add(WindowInsets.ime)
       .add(WindowInsets.safeGestures)
 
+
    Column(modifier = Modifier
       .fillMaxSize()
       .verticalScroll(state = rememberScrollState())
       .padding(windowInsets.asPaddingValues())
       .padding(horizontal = 8.dp)
+      .imePadding() //
    ) {
       TopAppBar(
          title = { Text(text = screenTitle) },
@@ -92,14 +97,14 @@ fun PersonScreen(
       InputName(
          name = personUiState.person.firstName,          // State ↓
          onNameChange = viewModel::onFirstNameChange,    // Event ↑
-         label = stringResource(R.string.firstname),              // State ↓
-         validateName = viewModel::validateName,         // Event ↑
+         label = stringResource(R.string.firstname),     // State ↓
+         validateName = viewModel::validateFirstname,    // Event ↑
       )
       InputName(
          name = personUiState.person.lastName,           // State ↓
          onNameChange = viewModel::onLastNameChange,     // Event ↑
          label = stringResource(R.string.lastname),      // State ↓
-         validateName = viewModel::validateName,         // Event ↑
+         validateName = viewModel::validateLastname,     // Event ↑
       )
       InputEmail(
          email = personUiState.person.email,             // State ↓
@@ -108,61 +113,22 @@ fun PersonScreen(
       )
       InputPhone(
          phone = personUiState.person.phone,             // State ↓
-         onPhoneChange = viewModel::onPhoneChange,        // Event ↑
+         onPhoneChange = viewModel::onPhoneChange,       // Event ↑
          validatePhone = viewModel::validatePhone        // Event ↑
       )
 
-      Spacer(modifier = Modifier.padding(32.dp))
-
-      InputEmail(
-         email = personUiState.person.email,             // State ↓
-         onEmailChange = viewModel::onEmailChange,       // Event ↑
-         validateEmail = viewModel::validateEmail        // Event ↑
-      )
-      InputPhone(
-         phone = personUiState.person.phone,             // State ↓
-         onPhoneChange = viewModel::onPhoneChange,        // Event ↑
-         validatePhone = viewModel::validatePhone        // Event ↑
-      )
-
-      Spacer(modifier = Modifier.padding(32.dp))
-
-      InputEmail(
-         email = personUiState.person.email,             // State ↓
-         onEmailChange = viewModel::onEmailChange,       // Event ↑
-         validateEmail = viewModel::validateEmail        // Event ↑
-      )
-      InputPhone(
-         phone = personUiState.person.phone,             // State ↓
-         onPhoneChange = viewModel::onPhoneChange,        // Event ↑
-         validatePhone = viewModel::validatePhone        // Event ↑
-      )
-
-      Spacer(modifier = Modifier.padding(32.dp))
-
-      InputEmail(
-         email = personUiState.person.email,             // State ↓
-         onEmailChange = viewModel::onEmailChange,       // Event ↑
-         validateEmail = viewModel::validateEmail        // Event ↑
-      )
-      InputPhone(
-         phone = personUiState.person.phone,             // State ↓
-         onPhoneChange = viewModel::onPhoneChange,        // Event ↑
-         validatePhone = viewModel::validatePhone        // Event ↑
-      )
-
-      Spacer(modifier = Modifier.padding(32.dp))
-
-      InputEmail(
-         email = personUiState.person.email,             // State ↓
-         onEmailChange = viewModel::onEmailChange,       // Event ↑
-         validateEmail = viewModel::validateEmail        // Event ↑
-      )
-      InputPhone(
-         phone = personUiState.person.phone,             // State ↓
-         onPhoneChange = viewModel::onPhoneChange,        // Event ↑
-         validatePhone = viewModel::validatePhone        // Event ↑
-      )
+//      Spacer(modifier = Modifier.padding(32.dp))
+//
+//      InputEmail(
+//         email = personUiState.person.email,             // State ↓
+//         onEmailChange = viewModel::onEmailChange,       // Event ↑
+//         validateEmail = viewModel::validateEmail        // Event ↑
+//      )
+//      InputPhone(
+//         phone = personUiState.person.phone,             // State ↓
+//         onPhoneChange = viewModel::onPhoneChange,        // Event ↑
+//         validatePhone = viewModel::validatePhone        // Event ↑
+//      )
 
 
    } // Column

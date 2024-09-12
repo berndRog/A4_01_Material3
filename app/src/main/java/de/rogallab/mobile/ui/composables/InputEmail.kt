@@ -22,6 +22,8 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -30,17 +32,17 @@ import de.rogallab.mobile.R
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputEmail(
-   email: String?,                                    // State ↓
-   onEmailChange: (String) -> Unit,                   // Event ↑
-   validateEmail: (String?) -> Pair<Boolean, String>, // Event ↑
-   label: String = stringResource(R.string.email),    // State ↓
+   email: String?,                                          // State ↓
+   onEmailChange: (String) -> Unit,                         // Event ↑
+   validateEmail: (String?) -> Pair<Boolean, String>,       // Event ↑
+   label: String = stringResource(R.string.email),         // State ↓
+   focusManager: FocusManager = LocalFocusManager.current,
+   keyboardController: SoftwareKeyboardController? =
+      LocalSoftwareKeyboardController.current
 ) {
    var isError by rememberSaveable { mutableStateOf(false) }
    var errorText by rememberSaveable { mutableStateOf("") }
-
    var isFocus by rememberSaveable { mutableStateOf(false) }
-   val focusManager: FocusManager = LocalFocusManager.current
-   val keyboardController = LocalSoftwareKeyboardController.current
 
    // Reusable Validation Functions: Validate the input when it changes
    val validate: (String?) -> Unit = { input ->
@@ -50,8 +52,9 @@ fun InputEmail(
    }
 
    OutlinedTextField(
-      modifier = Modifier.fillMaxWidth()
-         .onFocusChanged { focusState ->
+      modifier = Modifier
+         .testTag("InputEmail") // Set the test tag here
+         .fillMaxWidth()         .onFocusChanged { focusState ->
             if (!focusState.isFocused && isFocus) validate(email)
             isFocus = focusState.isFocused
          },

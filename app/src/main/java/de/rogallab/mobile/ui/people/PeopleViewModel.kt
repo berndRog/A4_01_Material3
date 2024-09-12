@@ -18,17 +18,14 @@ import kotlinx.coroutines.flow.update
 
 class PeopleViewModel(
    application: Application
-): AndroidViewModel(application) {
-
+) : AndroidViewModel(application) {
    // we must fix this by using a dependency injection framework
    private val _context = application.applicationContext
    private val _dataStore = DataStore(_context)
    private val _repository = PeopleRepository(_dataStore)
-
    // get error resources from the context
    private val _resourceProvider = ResourceProvider(_context)
    private val _errorResources = ErrorResources(_resourceProvider)
-
    // read dataStore when ViewModel is created
    init {
       logDebug(TAG, "init")
@@ -40,11 +37,9 @@ class PeopleViewModel(
       _repository.writeDataStore()
       super.onCleared()
    }
-
    // Data Binding PeopleListScreen <=> PersonViewModel
    private val _peopleUiStateFlow: MutableStateFlow<PeopleUiState> = MutableStateFlow(PeopleUiState())
    val peopleUiStateFlow: StateFlow<PeopleUiState> = _peopleUiStateFlow.asStateFlow()
-
    // read all people from repository
    fun fetchPeople() {
       logDebug(TAG, "fetchPeople")
@@ -55,35 +50,36 @@ class PeopleViewModel(
             }
             logDebug(TAG, "fetchPeople() people.size: ${peopleUiStateFlow.value.people.size}")
          }
-         is ResultData.Failure -> {
+         is ResultData.Error -> {
             val message = "Failed to fetch people ${resultData.throwable.localizedMessage}"
             logError(TAG, message)
          }
       }
    }
-
    // Data Binding PersonScreen <=> PersonViewModel
    private val _personUiStateFlow: MutableStateFlow<PersonUiState> = MutableStateFlow(PersonUiState())
    val personUiStateFlow: StateFlow<PersonUiState> = _personUiStateFlow.asStateFlow()
-
    fun onFirstNameChange(firstName: String) {
       if (firstName == _personUiStateFlow.value.person.firstName) return
       _personUiStateFlow.update { it: PersonUiState ->
          it.copy(person = it.person.copy(firstName = firstName))
       }
    }
+
    fun onLastNameChange(lastName: String) {
       if (lastName == _personUiStateFlow.value.person.lastName) return
       _personUiStateFlow.update { it: PersonUiState ->
          it.copy(person = it.person.copy(lastName = lastName))
       }
    }
+
    fun onEmailChange(email: String?) {
       if (email == null || email == _personUiStateFlow.value.person.email) return
       _personUiStateFlow.update { it: PersonUiState ->
          it.copy(person = it.person.copy(email = email))
       }
    }
+
    fun onPhoneChange(phone: String?) {
       if (phone == null || phone == _personUiStateFlow.value.person.phone) return
       _personUiStateFlow.update { it: PersonUiState ->
@@ -91,11 +87,26 @@ class PeopleViewModel(
       }
    }
 
+   fun fetchPerson(personId: String) {
+      logDebug(TAG, "fetchPersonById: $personId")
+      when (val resultData = _repository.findById(personId)) {
+         is ResultData.Success -> {
+            _personUiStateFlow.update { it: PersonUiState ->
+               it.copy(person = resultData.data ?: Person())  // new UiState
+            }
+         }
+         is ResultData.Error -> {
+            val message = "Failed to fetch person ${resultData.throwable.localizedMessage}"
+            logError(TAG, message)
+         }
+      }
+   }
+
    fun createPerson() {
       logDebug(TAG, "createPerson")
       when (val resultData = _repository.create(_personUiStateFlow.value.person)) {
          is ResultData.Success -> fetchPeople()
-         is ResultData.Failure -> {
+         is ResultData.Error -> {
             val message = "Failed to create a person ${resultData.throwable.localizedMessage}"
             logError(TAG, message)
             // showOnError(message = message, navEvent = NavEvent.ToPeopleList)
@@ -105,9 +116,9 @@ class PeopleViewModel(
 
    fun updatePerson() {
       logDebug(TAG, "updatePerson")
-      when(val resultData = _repository.update(_personUiStateFlow.value.person)) {
+      when (val resultData = _repository.update(_personUiStateFlow.value.person)) {
          is ResultData.Success -> fetchPeople()
-         is ResultData.Failure -> {
+         is ResultData.Error -> {
             val message = "Failed to update a person ${resultData.throwable.localizedMessage}"
             logError(TAG, message)
          }
@@ -116,9 +127,9 @@ class PeopleViewModel(
 
    fun removePerson(personId: String) {
       logDebug(TAG, "removePerson: $personId")
-      when(val resultData = _repository.remove(personId)) {
+      when (val resultData = _repository.remove(personId)) {
          is ResultData.Success -> fetchPeople()
-         is ResultData.Failure -> {
+         is ResultData.Error -> {
             val message = "Failed to remove a person ${resultData.throwable.localizedMessage}"
             logError(TAG, message)
             //showOnError(message = message, navEvent = NavEvent.ToPeopleList)
@@ -130,11 +141,19 @@ class PeopleViewModel(
       _personUiStateFlow.update { it.copy(person = Person()) }
    }
 
-   fun validateName(name: String): Pair<Boolean, String> =
+   fun validateFirstname(name: String): Pair<Boolean, String> =
       if (name.isEmpty() || name.length < _errorResources.charMin)
-         Pair(true, _errorResources.nameTooShort)
-      else if (name.length > _errorResources.charMax )
-         Pair(true, _errorResources.nameTooLong)
+         Pair(true, _errorResources.firstnameTooShort)
+      else if (name.length > _errorResources.charMax)
+         Pair(true, _errorResources.firstnameTooLong)
+      else
+         Pair(false, "")
+
+   fun validateLastname(name: String): Pair<Boolean, String> =
+      if (name.isEmpty() || name.length < _errorResources.charMin)
+         Pair(true, _errorResources.lastnameTooShort)
+      else if (name.length > _errorResources.charMax)
+         Pair(true, _errorResources.lastnameTooLong)
       else
          Pair(false, "")
 
@@ -148,15 +167,13 @@ class PeopleViewModel(
    }
 
    fun validatePhone(phone: String?): Pair<Boolean, String> {
-      phone?.let {
-         when (android.util.Patterns.PHONE.matcher(it).matches()) {
-            true -> return Pair(false,"")   // email ok
+      phone?.let { it ->
+         when (REGEX_PHONE_DACH.matches(it)) {
+            true -> return Pair(false, "")   // phone ok
             false -> return Pair(true, _errorResources.phoneInValid)
          }
       } ?: return Pair(false, "")
    }
-
-
    // validate all input fields after user finished input into the form
    fun validate(isInput: Boolean) {
       // input is ok        -> add and navigate up
@@ -164,42 +181,50 @@ class PeopleViewModel(
       // is the is an error -> show error and stay on screen
       val charMin = _errorResources.charMin
       val charMax = _errorResources.charMax
-
       val person = _personUiStateFlow.value.person
-
-      // firstName or lastName too short
+      // firstName or lastName too short or to long
       if (person.firstName.isEmpty() || person.firstName.length < charMin) {
-         logError(TAG, _errorResources.nameTooShort)
+         logError(TAG, _errorResources.firstnameTooShort)
+      } else if (person.firstName.length > charMax) {
+         logError(TAG, _errorResources.firstnameTooLong)
+      } else if (person.lastName.isEmpty() || person.lastName.length < charMin) {
+         logError(TAG, _errorResources.lastnameTooShort)
+      } else if (person.lastName.length > charMax) {
+         logError(TAG, _errorResources.lastnameTooLong)
       }
-      else if (person.lastName.isEmpty() || person.lastName.length < charMin) {
-         logError(TAG, _errorResources.nameTooShort)
-      }
-      else if (person.firstName.length > charMax) {
-         logError(TAG, _errorResources.nameTooLong)
-      }
-      else if (person.lastName.length > charMax) {
-         logError(TAG, _errorResources.nameTooLong)
-      }
-
       // email not valid
       else if (person.email != null &&
          !Patterns.EMAIL_ADDRESS.matcher(person.email).matches()) {
          logError(TAG, _errorResources.emailInValid)
       }
-
       // phone not valid
       else if (person.phone != null &&
-         !Patterns.PHONE.matcher(person.phone).matches()) {
-         logError(TAG,_errorResources.phoneInValid)
-      }
-      else {
+         !Patterns.PHONE.matcher(person.email).matches()) {
+//       !REGEX_PHONE_DACH.matches(person.phone)) {
+         logError(TAG, _errorResources.phoneInValid)
+      } else {
          // write data to repository
          if (isInput) this.createPerson()
-         else         this.updatePerson()
+         else this.updatePerson()
       }
    }
 
    companion object {
+      // Regex for Germany/Austria/Switzerland (DACH) phone numbers
+      // (?:\+|00)?:    This part allows for either a + or 00 prefix, both of which are used for international dialing.
+      // (49|43|41)?:   Country codes for Germany (49), Austria (43), and Switzerland (41), made optional.
+      // \(?(0)?\)?:    Allows for an optional area code starting with 0, which may be enclosed in parentheses (e.g., (0)).
+      // [\s/-]?:       Matches optional separators, including spaces, slashes, or hyphens.
+      // (\d{2,5}):     Matches the area code (between 2 and 5 digits).
+      // [\s/-]?:       Handles the separator between the area code and the local number.
+      // (\d{1,4}):     Matches the first block of the local number (1 to 4 digits).
+      // [\s/-]?:       Handles an optional separator again.
+      // (\d{1,4}):     Matches the second block of the local number.
+      // [\s-]?:        Optional space or hyphen.
+      // (\d{0,4}):     Optional final block of up to 4 digits.
+
+      private val REGEX_PHONE_DACH = Regex("""(?:\+|00)?(49|43|41)?[\s-]?\(?(0)?\)?[\s-]?(\d{2,5})[\s/-]?(\d{1,4})[\s/-]?(\d{1,4})[\s-]?(\d{0,4})""")
+
       private const val TAG = "[PeopleViewModel]"
    }
 }

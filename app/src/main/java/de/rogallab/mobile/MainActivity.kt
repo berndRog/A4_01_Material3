@@ -12,15 +12,12 @@ import de.rogallab.mobile.ui.theme.AppTheme
 class MainActivity : BaseActivity(tag) {
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
-
-      if(!isInTest()) {
-         setContent {
-            AppTheme {
-               Surface {
-                  //PersonScreen()
-                  //PeopleListScreen()
-                  PeopleSwipeListScreen()
-               }
+      setContent {
+         AppTheme {
+            Surface {
+               PersonScreen()
+               //PeopleListScreen()
+               //PeopleSwipeListScreen()
             }
          }
       }

@@ -24,8 +24,9 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import de.rogallab.mobile.domain.utilities.logDebug
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -43,17 +44,18 @@ Common input validation patterns in Jetpack Compose include:
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputName(
-   name: String,                                   // State ↓
-   onNameChange: (String) -> Unit,                 // Event ↑
-   label: String = "Name",                         // State ↓
-   validateName: (String) -> Pair<Boolean, String> // Event ↑
+   name: String,                                            // State ↓
+   onNameChange: (String) -> Unit,                          // Event ↑
+   label: String = "Name",                                  // State ↓
+   validateName: (String) -> Pair<Boolean, String>,         // Event ↑
+   focusManager: FocusManager = LocalFocusManager.current,  // State ↓
+   keyboardController: SoftwareKeyboardController? =        // State ↓
+      LocalSoftwareKeyboardController.current
 ) {
    // local error state
    var isError by rememberSaveable { mutableStateOf(false) }
    var errorText by rememberSaveable { mutableStateOf("") }
-   // debounce job
-   var debounceJob: Job? by remember { mutableStateOf(null) }
-   val coroutineScope = rememberCoroutineScope()
+   var isFocus by rememberSaveable { mutableStateOf(false) }
 
    // Reusable Validation Functions: Validate the input when it changes
    val validate: (String) -> Unit = { input ->
@@ -62,28 +64,21 @@ fun InputName(
       errorText = t
    }
 
-   var isFocus by rememberSaveable { mutableStateOf(false) }
-   val focusManager: FocusManager = LocalFocusManager.current
-   val keyboardController = LocalSoftwareKeyboardController.current
-
    OutlinedTextField(
-      modifier = Modifier
-         .testTag("InputNameField") // Set the test tag here
-         .fillMaxWidth()
+      modifier = Modifier.fillMaxWidth()
          .onFocusChanged { focusState ->
-            if (!focusState.isFocused && isFocus) validate(name)
+            // debounce validation until the user stops typing
+            // to avoid excessive recompositions
+            if (!focusState.isFocused && isFocus) {
+               logDebug("[InputName]","validate called: $name")
+               validate(name)
+            }
             isFocus = focusState.isFocused
          },
-      value = name,                 // State ↓
-      onValueChange = {
-         onNameChange(it)           // Event ↑
-         // Delay validation until the user stops typing to avoid excessive recompositions.
-         debounceJob?.cancel()
-         debounceJob = coroutineScope.launch {
-            delay(300)
-            validate(it)
-         }
-      },
+
+      value = name,                          // State ↓
+      onValueChange = { onNameChange(it) },  // Event ↑
+
       label = { Text(text = label) },
       textStyle = MaterialTheme.typography.bodyLarge,
       leadingIcon = {

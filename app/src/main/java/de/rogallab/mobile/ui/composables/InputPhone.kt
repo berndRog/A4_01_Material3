@@ -17,9 +17,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -32,14 +34,14 @@ fun InputPhone(
    onPhoneChange: (String) -> Unit,                   // Event ↑
    validatePhone: (String?) -> Pair<Boolean, String>, // Event ↑
    label: String  = stringResource(R.string.phone),        // State ↓
+   focusManager: FocusManager = LocalFocusManager.current,  // State ↓
+   keyboardController: SoftwareKeyboardController? =        // State ↓
+      LocalSoftwareKeyboardController.current
 ) {
 
    var isError by rememberSaveable { mutableStateOf(false) }
    var errorText by rememberSaveable { mutableStateOf("") }
-
    var isFocus by rememberSaveable { mutableStateOf(false) }
-   val focusManager = LocalFocusManager.current
-   val keyboardController = LocalSoftwareKeyboardController.current
 
    // Reusable Validation Functions: Validate the input when it changes
    val validate: (String?) -> Unit = { input ->
