@@ -33,14 +33,15 @@ import de.rogallab.mobile.domain.utilities.logDebug
 import de.rogallab.mobile.domain.utilities.logInfo
 import de.rogallab.mobile.domain.utilities.logVerbose
 import de.rogallab.mobile.ui.people.PeopleViewModel
-import de.rogallab.mobile.ui.people.composables.PersonListItem
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PeopleListScreen(
    viewModel: PeopleViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
 ) {
-   val tag = "[PeopleListScreen]"
+   val tag = "<-PeopleListScreen"
+
    // observe the peopleUiStateFlow in the ViewModel
    // notify the UI when the state changes
    val peopleUiState by viewModel.peopleUiStateFlow.collectAsStateWithLifecycle()
@@ -58,7 +59,7 @@ fun PeopleListScreen(
       modifier = Modifier
          .fillMaxSize()
          .padding(windowInsets.asPaddingValues())
-         .padding(horizontal = 8.dp)
+         .padding(horizontal = 16.dp)
    ) {
       TopAppBar(
          title = { Text(screenTitle) }

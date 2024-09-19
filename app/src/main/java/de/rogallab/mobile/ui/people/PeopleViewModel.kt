@@ -168,7 +168,7 @@ class PeopleViewModel(
 
    fun validatePhone(phone: String?): Pair<Boolean, String> {
       phone?.let { it ->
-         when (REGEX_PHONE_DACH.matches(it)) {
+         when (!Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
             true -> return Pair(false, "")   // phone ok
             false -> return Pair(true, _errorResources.phoneInValid)
          }
@@ -199,8 +199,7 @@ class PeopleViewModel(
       }
       // phone not valid
       else if (person.phone != null &&
-         !Patterns.PHONE.matcher(person.email).matches()) {
-//       !REGEX_PHONE_DACH.matches(person.phone)) {
+         !Patterns.PHONE.matcher(person.phone).matches()) {
          logError(TAG, _errorResources.phoneInValid)
       } else {
          // write data to repository
@@ -210,21 +209,6 @@ class PeopleViewModel(
    }
 
    companion object {
-      // Regex for Germany/Austria/Switzerland (DACH) phone numbers
-      // (?:\+|00)?:    This part allows for either a + or 00 prefix, both of which are used for international dialing.
-      // (49|43|41)?:   Country codes for Germany (49), Austria (43), and Switzerland (41), made optional.
-      // \(?(0)?\)?:    Allows for an optional area code starting with 0, which may be enclosed in parentheses (e.g., (0)).
-      // [\s/-]?:       Matches optional separators, including spaces, slashes, or hyphens.
-      // (\d{2,5}):     Matches the area code (between 2 and 5 digits).
-      // [\s/-]?:       Handles the separator between the area code and the local number.
-      // (\d{1,4}):     Matches the first block of the local number (1 to 4 digits).
-      // [\s/-]?:       Handles an optional separator again.
-      // (\d{1,4}):     Matches the second block of the local number.
-      // [\s-]?:        Optional space or hyphen.
-      // (\d{0,4}):     Optional final block of up to 4 digits.
-
-      private val REGEX_PHONE_DACH = Regex("""(?:\+|00)?(49|43|41)?[\s-]?\(?(0)?\)?[\s-]?(\d{2,5})[\s/-]?(\d{1,4})[\s/-]?(\d{1,4})[\s-]?(\d{0,4})""")
-
-      private const val TAG = "[PeopleViewModel]"
+      private const val TAG = "<-PeopleViewModel"
    }
 }

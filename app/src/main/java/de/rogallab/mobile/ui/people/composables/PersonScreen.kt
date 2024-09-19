@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import de.rogallab.mobile.R
@@ -54,8 +55,8 @@ fun PersonScreen(
       if (isInputMode) stringResource(R.string.person_input)
       else stringResource(R.string.person_detail)
    val tag =
-      if (isInputMode) "[PersonInputScreen]"
-      else "[PersonDetailScreen]"
+      if (isInputMode) "<-PersonInputScreen"
+      else "<-PersonDetailScreen"
 
    // is PersonDetailScreen
    if (!isInputMode) {
@@ -72,12 +73,11 @@ fun PersonScreen(
       .add(WindowInsets.ime)
       .add(WindowInsets.safeGestures)
 
-
    Column(modifier = Modifier
       .fillMaxSize()
       .verticalScroll(state = rememberScrollState())
       .padding(windowInsets.asPaddingValues())
-      .padding(horizontal = 8.dp)
+      .padding(horizontal = 16.dp)
       .imePadding() //
    ) {
       TopAppBar(
@@ -116,21 +116,31 @@ fun PersonScreen(
          onPhoneChange = viewModel::onPhoneChange,       // Event ↑
          validatePhone = viewModel::validatePhone        // Event ↑
       )
-
-//      Spacer(modifier = Modifier.padding(32.dp))
-//
-//      InputEmail(
-//         email = personUiState.person.email,             // State ↓
-//         onEmailChange = viewModel::onEmailChange,       // Event ↑
-//         validateEmail = viewModel::validateEmail        // Event ↑
-//      )
-//      InputPhone(
-//         phone = personUiState.person.phone,             // State ↓
-//         onPhoneChange = viewModel::onPhoneChange,        // Event ↑
-//         validatePhone = viewModel::validatePhone        // Event ↑
-//      )
-
-
+/*
+      Spacer(modifier = Modifier.padding(32.dp))
+      InputName(
+         name = personUiState.person.firstName,          // State ↓
+         onNameChange = viewModel::onFirstNameChange,    // Event ↑
+         label = stringResource(R.string.firstname),     // State ↓
+         validateName = viewModel::validateFirstname,    // Event ↑
+      )
+      InputName(
+         name = personUiState.person.lastName,           // State ↓
+         onNameChange = viewModel::onLastNameChange,     // Event ↑
+         label = stringResource(R.string.lastname),      // State ↓
+         validateName = viewModel::validateLastname,     // Event ↑
+      )
+      InputEmail(
+         email = personUiState.person.email,             // State ↓
+         onEmailChange = viewModel::onEmailChange,       // Event ↑
+         validateEmail = viewModel::validateEmail        // Event ↑
+      )
+      InputPhone(
+         phone = personUiState.person.phone,             // State ↓
+         onPhoneChange = viewModel::onPhoneChange,       // Event ↑
+         validatePhone = viewModel::validatePhone        // Event ↑
+      )
+*/
    } // Column
 }
 

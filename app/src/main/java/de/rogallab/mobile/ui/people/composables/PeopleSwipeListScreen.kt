@@ -47,7 +47,7 @@ import de.rogallab.mobile.ui.people.PeopleViewModel
 fun PeopleSwipeListScreen(
    viewModel: PeopleViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
 ) {
-   val tag = "[PeopleListScreen]"
+   val tag = "<-PeopleListScreen"
 
    // Observe the peopleUiState of the viewmodel
    val peopleUiState
