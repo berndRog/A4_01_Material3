@@ -12,7 +12,6 @@ import de.rogallab.mobile.domain.utilities.logError
 import de.rogallab.mobile.ui.errors.ErrorResources
 import de.rogallab.mobile.ui.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
@@ -37,11 +36,19 @@ class PeopleViewModel(
       _repository.writeDataStore()
       super.onCleared()
    }
-   // Data Binding PeopleListScreen <=> PersonViewModel
-   private val _peopleUiStateFlow: MutableStateFlow<PeopleUiState> = MutableStateFlow(PeopleUiState())
-   val peopleUiStateFlow: StateFlow<PeopleUiState> = _peopleUiStateFlow.asStateFlow()
+
+   // PEOPLE LIST SCREEN <=> PeopleViewModel
+   private val _peopleUiStateFlow = MutableStateFlow(PeopleUiState())
+   val peopleUiStateFlow = _peopleUiStateFlow.asStateFlow()
+
+   fun onProcessIntent(intent: PeopleIntent) {
+      when (intent) {
+         is PeopleIntent.FetchPeople -> fetchPeople()
+      }
+   }
+
    // read all people from repository
-   fun fetchPeople() {
+   private fun fetchPeople() {
       logDebug(TAG, "fetchPeople")
       when (val resultData = _repository.getAll()) {
          is ResultData.Success -> {
@@ -56,40 +63,54 @@ class PeopleViewModel(
          }
       }
    }
-   // Data Binding PersonScreen <=> PersonViewModel
-   private val _personUiStateFlow: MutableStateFlow<PersonUiState> = MutableStateFlow(PersonUiState())
-   val personUiStateFlow: StateFlow<PersonUiState> = _personUiStateFlow.asStateFlow()
-   fun onFirstNameChange(firstName: String) {
+
+
+   // PERSON SCREEN <=> PeopleViewModel
+   private val _personUiStateFlow = MutableStateFlow(PersonUiState())
+   val personUiStateFlow = _personUiStateFlow.asStateFlow()
+
+   // transform intent into an action
+   fun onProcessIntent(intent: PersonIntent) {
+      when (intent) {
+         is PersonIntent.FirstNameChange -> onFirstNameChange(intent.firstName)
+         is PersonIntent.LastNameChange -> onLastNameChange(intent.lastName)
+         is PersonIntent.EmailChange -> onEmailChange(intent.email)
+         is PersonIntent.PhoneChange -> onPhoneChange(intent.phone)
+         is PersonIntent.FetchPersonById -> fetchPersonById(intent.id)
+         is PersonIntent.CreatePerson -> createPerson()
+         is PersonIntent.UpdatePerson -> updatePerson()
+         is PersonIntent.RemovePerson -> removePerson(intent.id)
+      }
+   }
+
+   private fun onFirstNameChange(firstName: String) {
       if (firstName == _personUiStateFlow.value.person.firstName) return
       _personUiStateFlow.update { it: PersonUiState ->
          it.copy(person = it.person.copy(firstName = firstName))
       }
    }
-
-   fun onLastNameChange(lastName: String) {
+   private fun onLastNameChange(lastName: String) {
       if (lastName == _personUiStateFlow.value.person.lastName) return
       _personUiStateFlow.update { it: PersonUiState ->
          it.copy(person = it.person.copy(lastName = lastName))
       }
    }
-
-   fun onEmailChange(email: String?) {
-      if (email == null || email == _personUiStateFlow.value.person.email) return
+   private fun onEmailChange(email: String?) {
+      if (email == _personUiStateFlow.value.person.email) return
       _personUiStateFlow.update { it: PersonUiState ->
          it.copy(person = it.person.copy(email = email))
       }
    }
-
-   fun onPhoneChange(phone: String?) {
-      if (phone == null || phone == _personUiStateFlow.value.person.phone) return
+   private fun onPhoneChange(phone: String?) {
+      if(phone == _personUiStateFlow.value.person.phone) return
       _personUiStateFlow.update { it: PersonUiState ->
          it.copy(person = it.person.copy(phone = phone))
       }
    }
 
-   fun fetchPerson(personId: String) {
-      logDebug(TAG, "fetchPersonById: $personId")
-      when (val resultData = _repository.findById(personId)) {
+   private fun fetchPersonById(id: String) {
+      logDebug(TAG, "fetchPersonById: $id")
+      when (val resultData = _repository.findById(id)) {
          is ResultData.Success -> {
             _personUiStateFlow.update { it: PersonUiState ->
                it.copy(person = resultData.data ?: Person())  // new UiState
@@ -101,8 +122,7 @@ class PeopleViewModel(
          }
       }
    }
-
-   fun createPerson() {
+   private fun createPerson() {
       logDebug(TAG, "createPerson")
       when (val resultData = _repository.create(_personUiStateFlow.value.person)) {
          is ResultData.Success -> fetchPeople()
@@ -113,8 +133,7 @@ class PeopleViewModel(
          }
       }
    }
-
-   fun updatePerson() {
+   private fun updatePerson() {
       logDebug(TAG, "updatePerson")
       when (val resultData = _repository.update(_personUiStateFlow.value.person)) {
          is ResultData.Success -> fetchPeople()
@@ -124,8 +143,7 @@ class PeopleViewModel(
          }
       }
    }
-
-   fun removePerson(personId: String) {
+   private fun removePerson(personId: String) {
       logDebug(TAG, "removePerson: $personId")
       when (val resultData = _repository.remove(personId)) {
          is ResultData.Success -> fetchPeople()

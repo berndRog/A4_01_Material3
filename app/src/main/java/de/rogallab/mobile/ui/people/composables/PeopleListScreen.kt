@@ -32,8 +32,9 @@ import de.rogallab.mobile.domain.entities.Person
 import de.rogallab.mobile.domain.utilities.logDebug
 import de.rogallab.mobile.domain.utilities.logInfo
 import de.rogallab.mobile.domain.utilities.logVerbose
+import de.rogallab.mobile.ui.people.PeopleIntent
 import de.rogallab.mobile.ui.people.PeopleViewModel
-
+import de.rogallab.mobile.ui.people.PersonIntent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,7 +49,7 @@ fun PeopleListScreen(
    // read all people from repository, when the screen is created
    LaunchedEffect(Unit) {
       logVerbose(tag, "readPeople()")
-      viewModel.fetchPeople()
+      viewModel.onProcessIntent(PeopleIntent.FetchPeople)
    }
 
    val screenTitle = stringResource(R.string.people_list)
@@ -97,7 +98,7 @@ fun PeopleListScreen(
                },
                onDeleted = { id: String ->
                   logInfo(tag, "Person deleted: $id")
-                  viewModel.removePerson(id)
+                  viewModel.onProcessIntent(PersonIntent.RemovePerson(id))
                }
             )
          }

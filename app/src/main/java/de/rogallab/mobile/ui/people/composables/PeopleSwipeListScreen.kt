@@ -40,6 +40,7 @@ import de.rogallab.mobile.domain.entities.Person
 import de.rogallab.mobile.domain.utilities.logDebug
 import de.rogallab.mobile.domain.utilities.logVerbose
 import de.rogallab.mobile.ui.composables.SetSwipeBackground
+import de.rogallab.mobile.ui.people.PeopleIntent
 import de.rogallab.mobile.ui.people.PeopleViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,7 +57,7 @@ fun PeopleSwipeListScreen(
    // read all people from repository, when the screen is created
    LaunchedEffect(Unit) {
       logVerbose(tag, "readPeople()")
-      viewModel.fetchPeople()
+      viewModel.onProcessIntent(PeopleIntent.FetchPeople)
    }
 
    val activity = LocalContext.current as Activity
@@ -77,9 +78,7 @@ fun PeopleSwipeListScreen(
       TopAppBar( title = { Text(screenTitle) } )
 
       Row( modifier = Modifier.padding(end = 8.dp)) {
-
          Spacer(modifier = Modifier.weight(0.8f))
-
          FloatingActionButton(
             containerColor = MaterialTheme.colorScheme.tertiary,
             onClick = {

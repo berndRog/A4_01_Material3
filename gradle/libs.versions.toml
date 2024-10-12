@@ -17,7 +17,7 @@ junit = "4.13.2"
 truth = "1.6.0"
 manifest = "1.7.2"
 # plugins
-agp = "8.6.1"
+agp = "8.7.0"
 kotlin = "1.9.24"
 ksp = "1.9.24-1.0.20"
 uiTextGoogleFonts = "1.7.2"
