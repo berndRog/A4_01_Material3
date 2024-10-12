@@ -49,7 +49,7 @@ fun PeopleListScreen(
    // read all people from repository, when the screen is created
    LaunchedEffect(Unit) {
       logVerbose(tag, "readPeople()")
-      viewModel.onProcessIntent(PeopleIntent.FetchPeople)
+      viewModel.onProcessIntent(PeopleIntent.Fetch)
    }
 
    val screenTitle = stringResource(R.string.people_list)
@@ -98,7 +98,7 @@ fun PeopleListScreen(
                },
                onDeleted = { id: String ->
                   logInfo(tag, "Person deleted: $id")
-                  viewModel.onProcessIntent(PersonIntent.RemovePerson(id))
+                  viewModel.onProcessIntent(PersonIntent.Remove(id))
                }
             )
          }

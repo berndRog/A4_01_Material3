@@ -59,7 +59,7 @@ fun PersonScreen(
    if (!isInputMode) {
       id?.let { it: String ->
          LaunchedEffect(Unit) {
-            viewModel.onProcessIntent(PersonIntent.FetchPersonById(it))
+            viewModel.onProcessIntent(PersonIntent.FetchById(it))
          }
       } ?: run {
          logError(tag,"No id for person is given")

@@ -6,8 +6,8 @@ sealed class PersonIntent {
    data class  EmailChange(val email: String) : PersonIntent()
    data class  PhoneChange(val phone: String) : PersonIntent()
 
-   data class FetchPersonById(val id: String) : PersonIntent()
-   data object CreatePerson : PersonIntent()
-   data object UpdatePerson : PersonIntent()
-   data class  RemovePerson(val id: String) : PersonIntent()
+   data class  FetchById(val id: String) : PersonIntent()
+   data object Create : PersonIntent()
+   data object Update : PersonIntent()
+   data class  Remove(val id: String) : PersonIntent()
 }

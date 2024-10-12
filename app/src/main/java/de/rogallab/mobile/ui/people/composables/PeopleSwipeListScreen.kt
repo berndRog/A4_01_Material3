@@ -57,7 +57,7 @@ fun PeopleSwipeListScreen(
    // read all people from repository, when the screen is created
    LaunchedEffect(Unit) {
       logVerbose(tag, "readPeople()")
-      viewModel.onProcessIntent(PeopleIntent.FetchPeople)
+      viewModel.onProcessIntent(PeopleIntent.Fetch)
    }
 
    val activity = LocalContext.current as Activity

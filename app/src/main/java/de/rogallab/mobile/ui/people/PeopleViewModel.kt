@@ -41,21 +41,21 @@ class PeopleViewModel(
    private val _peopleUiStateFlow = MutableStateFlow(PeopleUiState())
    val peopleUiStateFlow = _peopleUiStateFlow.asStateFlow()
 
+   // transform intent into an action
    fun onProcessIntent(intent: PeopleIntent) {
       when (intent) {
-         is PeopleIntent.FetchPeople -> fetchPeople()
+         is PeopleIntent.Fetch -> fetch()
       }
    }
 
    // read all people from repository
-   private fun fetchPeople() {
-      logDebug(TAG, "fetchPeople")
+   private fun fetch() {
       when (val resultData = _repository.getAll()) {
          is ResultData.Success -> {
             _peopleUiStateFlow.update { it: PeopleUiState ->
                it.copy(people = resultData.data.toList())
             }
-            logDebug(TAG, "fetchPeople() people.size: ${peopleUiStateFlow.value.people.size}")
+            logDebug(TAG, "fetch() people.size: ${peopleUiStateFlow.value.people.size}")
          }
          is ResultData.Error -> {
             val message = "Failed to fetch people ${resultData.throwable.localizedMessage}"
@@ -76,10 +76,10 @@ class PeopleViewModel(
          is PersonIntent.LastNameChange -> onLastNameChange(intent.lastName)
          is PersonIntent.EmailChange -> onEmailChange(intent.email)
          is PersonIntent.PhoneChange -> onPhoneChange(intent.phone)
-         is PersonIntent.FetchPersonById -> fetchPersonById(intent.id)
-         is PersonIntent.CreatePerson -> createPerson()
-         is PersonIntent.UpdatePerson -> updatePerson()
-         is PersonIntent.RemovePerson -> removePerson(intent.id)
+         is PersonIntent.FetchById -> fetchById(intent.id)
+         is PersonIntent.Create -> create()
+         is PersonIntent.Update -> update()
+         is PersonIntent.Remove -> remove(intent.id)
       }
    }
 
@@ -108,7 +108,7 @@ class PeopleViewModel(
       }
    }
 
-   private fun fetchPersonById(id: String) {
+   private fun fetchById(id: String) {
       logDebug(TAG, "fetchPersonById: $id")
       when (val resultData = _repository.findById(id)) {
          is ResultData.Success -> {
@@ -122,10 +122,10 @@ class PeopleViewModel(
          }
       }
    }
-   private fun createPerson() {
+   private fun create() {
       logDebug(TAG, "createPerson")
       when (val resultData = _repository.create(_personUiStateFlow.value.person)) {
-         is ResultData.Success -> fetchPeople()
+         is ResultData.Success -> fetch()
          is ResultData.Error -> {
             val message = "Failed to create a person ${resultData.throwable.localizedMessage}"
             logError(TAG, message)
@@ -133,20 +133,20 @@ class PeopleViewModel(
          }
       }
    }
-   private fun updatePerson() {
+   private fun update() {
       logDebug(TAG, "updatePerson")
       when (val resultData = _repository.update(_personUiStateFlow.value.person)) {
-         is ResultData.Success -> fetchPeople()
+         is ResultData.Success -> fetch()
          is ResultData.Error -> {
             val message = "Failed to update a person ${resultData.throwable.localizedMessage}"
             logError(TAG, message)
          }
       }
    }
-   private fun removePerson(personId: String) {
+   private fun remove(personId: String) {
       logDebug(TAG, "removePerson: $personId")
       when (val resultData = _repository.remove(personId)) {
-         is ResultData.Success -> fetchPeople()
+         is ResultData.Success -> fetch()
          is ResultData.Error -> {
             val message = "Failed to remove a person ${resultData.throwable.localizedMessage}"
             logError(TAG, message)
@@ -221,8 +221,8 @@ class PeopleViewModel(
          logError(TAG, _errorResources.phoneInValid)
       } else {
          // write data to repository
-         if (isInput) this.createPerson()
-         else this.updatePerson()
+         if (isInput) this.create()
+         else this.update()
       }
    }
 
