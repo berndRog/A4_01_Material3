@@ -175,7 +175,7 @@ class DataStore(
 
 
    companion object {
-      private const val TAG = "[DataStore]"
+      private const val TAG = "<-DataStore"
       private const val DIRECTORY_NAME = "android"
       private const val FILE_NAME = "people.json"
    }

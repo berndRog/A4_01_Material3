@@ -42,6 +42,7 @@ import de.rogallab.mobile.domain.utilities.logVerbose
 import de.rogallab.mobile.ui.composables.SetSwipeBackground
 import de.rogallab.mobile.ui.people.PeopleIntent
 import de.rogallab.mobile.ui.people.PeopleViewModel
+import de.rogallab.mobile.ui.people.PersonIntent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -109,7 +110,7 @@ fun PeopleSwipeListScreen(
                         return@rememberSwipeToDismissBoxState true
                      } else if (it == SwipeToDismissBoxValue.EndToStart) {
                         logDebug(tag, "remove Person")
-                        // viewModel.removePerson(person)
+                        viewModel.onProcessIntent(PersonIntent.Remove(person.id))
                         // undo remove?
                         // toDo in chapter 5
                         return@rememberSwipeToDismissBoxState true

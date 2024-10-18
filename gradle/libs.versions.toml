@@ -1,26 +1,26 @@
 [versions]
-activityCompose = "1.9.2"
+activityCompose = "1.9.3"
 coilCompose = "2.7.0"
-compose = "1.7.2"
+compose = "1.7.4"
 core = "1.13.1"
-composeBom = "2024.09.02"
+composeBom = "2024.10.00"
 koin = "4.0.0"
 kotlinCoroutines = "1.9.0"
-kotlinxSerializationJson = "1.6.3"
+kotlinxSerializationJson = "1.7.3"
 lifecycle = "2.8.6"
-navigation = "2.8.1"
+navigation = "2.8.3"
 # testing
-androidTestCore = "1.6.1"
+androidTestCore = "1.6.2"
 espresso = "3.6.1"
 extJunit = "1.2.1"
 junit = "4.13.2"
 truth = "1.6.0"
-manifest = "1.7.2"
+manifest = "1.7.4"
 # plugins
-agp = "8.7.0"
+agp = "8.7.1"
 kotlin = "1.9.24"
 ksp = "1.9.24-1.0.20"
-uiTextGoogleFonts = "1.7.2"
+uiTextGoogleFonts = "1.7.4"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }

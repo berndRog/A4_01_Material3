@@ -9,8 +9,6 @@ class PeopleRepository(
    val dataStore: IDataStore
 ): IPeopleRepository {
 
-
-
    override fun getAll(): ResultData<MutableList<Person>> {
       return try {
          ResultData.Success(dataStore.selectAll())
