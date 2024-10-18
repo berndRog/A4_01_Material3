@@ -83,7 +83,7 @@ class PeopleViewModel(
          is PersonIntent.FetchById -> fetchById(intent.id)
          is PersonIntent.Create -> create()
          is PersonIntent.Update -> update()
-         is PersonIntent.Remove -> remove(intent.id)
+         is PersonIntent.Remove -> remove(intent.person)
       }
    }
 
@@ -147,14 +147,13 @@ class PeopleViewModel(
          }
       }
    }
-   private fun remove(personId: String) {
-      logDebug(TAG, "removePerson: $personId")
-      when (val resultData = _repository.remove(personId)) {
+   private fun remove(person: Person) {
+      logDebug(TAG, "removePerson: $person")
+      when (val resultData = _repository.remove(person.id)) {
          is ResultData.Success -> fetch()
          is ResultData.Error -> {
             val message = "Failed to remove a person ${resultData.throwable.localizedMessage}"
             logError(TAG, message)
-            //showOnError(message = message, navEvent = NavEvent.ToPeopleList)
          }
       }
    }

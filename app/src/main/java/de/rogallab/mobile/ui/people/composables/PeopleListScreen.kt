@@ -98,7 +98,7 @@ fun PeopleListScreen(
                },
                onDeleted = { id: String ->
                   logInfo(tag, "Person deleted: $id")
-                  viewModel.onProcessIntent(PersonIntent.Remove(id))
+                  viewModel.onProcessIntent(PersonIntent.Remove(person))
                }
             )
          }

@@ -110,7 +110,7 @@ fun PeopleSwipeListScreen(
                         return@rememberSwipeToDismissBoxState true
                      } else if (it == SwipeToDismissBoxValue.EndToStart) {
                         logDebug(tag, "remove Person")
-                        viewModel.onProcessIntent(PersonIntent.Remove(person.id))
+                        viewModel.onProcessIntent(PersonIntent.Remove(person))
                         // undo remove?
                         // toDo in chapter 5
                         return@rememberSwipeToDismissBoxState true
