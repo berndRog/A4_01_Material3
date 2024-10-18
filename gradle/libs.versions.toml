@@ -6,11 +6,11 @@ core = "1.13.1"
 composeBom = "2024.10.00"
 koin = "4.0.0"
 kotlinCoroutines = "1.9.0"
-kotlinxSerializationJson = "1.7.3"
+kotlinxSerializationJson = "1.6.3"  # for kotlin 1.9.x
 lifecycle = "2.8.6"
 navigation = "2.8.3"
 # testing
-androidTestCore = "1.6.2"
+androidTestCore = "1.6.1"
 espresso = "3.6.1"
 extJunit = "1.2.1"
 junit = "4.13.2"

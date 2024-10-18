@@ -96,26 +96,26 @@ fun PersonScreen(
          onNameChange = { firstName: String ->           // Event ↑
             viewModel.onProcessIntent(PersonIntent.FirstNameChange(firstName)) },
          label = stringResource(R.string.firstname),            // State ↓
-         validateName = viewModel::validateFirstname,    // Event ↑
+         validateName = viewModel::validateFirstName,    // Event ↑ no state change
       )
       InputName(
          name = personUiState.person.lastName,           // State ↓
          onNameChange = { lastName: String ->            // Event ↑
             viewModel.onProcessIntent(PersonIntent.LastNameChange(lastName)) },
          label = stringResource(R.string.lastname),             // State ↓
-         validateName = viewModel::validateLastname,     // Event ↑
+         validateName = viewModel::validateLastName,     // Event ↑ no state change
       )
       InputEmail(
          email = personUiState.person.email,             // State ↓
          onEmailChange = { email:String ->               // Event ↑
             viewModel.onProcessIntent(PersonIntent.EmailChange(email)) },
-         validateEmail = viewModel::validateEmail        // Event ↑
+         validateEmail = viewModel::validateEmail        // Event ↑ no state change
       )
       InputPhone(
          phone = personUiState.person.phone,             // State ↓
          onPhoneChange = { phone:String ->               // Event ↑
             viewModel.onProcessIntent(PersonIntent.PhoneChange(phone)) },
-         validatePhone = viewModel::validatePhone        // Event ↑
+         validatePhone = viewModel::validatePhone        // Event ↑ no state change
       )
    } // Column
 }

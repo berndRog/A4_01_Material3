@@ -3,7 +3,7 @@ package de.rogallab.mobile
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import de.rogallab.mobile.utilities.logInfo
+import de.rogallab.mobile.domain.utilities.logInfo
 
 open class BaseActivity(
    private val _tag: String

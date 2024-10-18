@@ -37,6 +37,10 @@ class PeopleViewModel(
       super.onCleared()
    }
 
+   // ===============================
+   // S T A T E   C H A N G E S
+   // ===============================
+
    // PEOPLE LIST SCREEN <=> PeopleViewModel
    private val _peopleUiStateFlow = MutableStateFlow(PeopleUiState())
    val peopleUiStateFlow = _peopleUiStateFlow.asStateFlow()
@@ -64,7 +68,6 @@ class PeopleViewModel(
       }
    }
 
-
    // PERSON SCREEN <=> PeopleViewModel
    private val _personUiStateFlow = MutableStateFlow(PersonUiState())
    val personUiStateFlow = _personUiStateFlow.asStateFlow()
@@ -76,6 +79,7 @@ class PeopleViewModel(
          is PersonIntent.LastNameChange -> onLastNameChange(intent.lastName)
          is PersonIntent.EmailChange -> onEmailChange(intent.email)
          is PersonIntent.PhoneChange -> onPhoneChange(intent.phone)
+
          is PersonIntent.FetchById -> fetchById(intent.id)
          is PersonIntent.Create -> create()
          is PersonIntent.Update -> update()
@@ -159,22 +163,27 @@ class PeopleViewModel(
       _personUiStateFlow.update { it.copy(person = Person()) }
    }
 
-   fun validateFirstname(name: String): Pair<Boolean, String> =
-      if (name.isEmpty() || name.length < _errorResources.charMin)
-         Pair(true, _errorResources.firstnameTooShort)
-      else if (name.length > _errorResources.charMax)
-         Pair(true, _errorResources.firstnameTooLong)
+   // ===============================
+   // N O   S T A T E   C H A N G E S
+   // ===============================
+   // Validation is unrelated to state management and simply returns a result
+   // We can call the validation function directly in the Composables
+   fun validateFirstName(firstName: String): Pair<Boolean, String> {
+      if (firstName.isEmpty() || firstName.length < _errorResources.charMin)
+         return Pair(true, _errorResources.firstnameTooShort)
+      else if (firstName.length > _errorResources.charMax)
+         return Pair(true, _errorResources.firstnameTooLong)
       else
-         Pair(false, "")
-
-   fun validateLastname(name: String): Pair<Boolean, String> =
-      if (name.isEmpty() || name.length < _errorResources.charMin)
-         Pair(true, _errorResources.lastnameTooShort)
-      else if (name.length > _errorResources.charMax)
-         Pair(true, _errorResources.lastnameTooLong)
+         return Pair(false, "")
+   }
+   fun validateLastName(lastName: String): Pair<Boolean, String> {
+      if (lastName.isEmpty() || lastName.length < _errorResources.charMin)
+         return Pair(true, _errorResources.lastnameTooShort)
+      else if (lastName.length > _errorResources.charMax)
+         return Pair(true, _errorResources.lastnameTooLong)
       else
-         Pair(false, "")
-
+         return Pair(false, "")
+   }
    fun validateEmail(email: String?): Pair<Boolean, String> {
       email?.let {
          when (android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
@@ -183,7 +192,6 @@ class PeopleViewModel(
          }
       } ?: return Pair(false, "")
    }
-
    fun validatePhone(phone: String?): Pair<Boolean, String> {
       phone?.let { it ->
          when (!Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
@@ -192,6 +200,7 @@ class PeopleViewModel(
          }
       } ?: return Pair(false, "")
    }
+
    // validate all input fields after user finished input into the form
    fun validate(isInput: Boolean) {
       // input is ok        -> add and navigate up
