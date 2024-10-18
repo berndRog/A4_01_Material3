@@ -169,21 +169,21 @@ class PeopleViewModel(
    // Validation is unrelated to state management and simply returns a result
    // We can call the validation function directly in the Composables
    fun validateFirstName(firstName: String): Pair<Boolean, String> {
-      if (firstName.isEmpty() || firstName.length < _errorResources.charMin)
-         return Pair(true, _errorResources.firstnameTooShort)
+      return if (firstName.isEmpty() || firstName.length < _errorResources.charMin)
+         Pair(true, _errorResources.firstnameTooShort)
       else if (firstName.length > _errorResources.charMax)
-         return Pair(true, _errorResources.firstnameTooLong)
+         Pair(true, _errorResources.firstnameTooLong)
       else
-         return Pair(false, "")
+         Pair(false, "")
    }
-   fun validateLastName(lastName: String): Pair<Boolean, String> {
+   fun validateLastName(lastName: String): Pair<Boolean, String> =
       if (lastName.isEmpty() || lastName.length < _errorResources.charMin)
-         return Pair(true, _errorResources.lastnameTooShort)
+         Pair(true, _errorResources.lastnameTooShort)
       else if (lastName.length > _errorResources.charMax)
-         return Pair(true, _errorResources.lastnameTooLong)
+         Pair(true, _errorResources.lastnameTooLong)
       else
-         return Pair(false, "")
-   }
+         Pair(false, "")
+
    fun validateEmail(email: String?): Pair<Boolean, String> {
       email?.let {
          when (android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
