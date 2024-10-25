@@ -25,17 +25,6 @@ class PeopleViewModel(
    // get error resources from the context
    private val _resourceProvider = ResourceProvider(_context)
    private val _errorResources = ErrorResources(_resourceProvider)
-   // read dataStore when ViewModel is created
-   init {
-      logDebug(TAG, "init")
-      _repository.readDataStore()
-   }
-   // write dataStore when ViewModel is cleared
-   override fun onCleared() {
-      logDebug(TAG, "onCleared()")
-      _repository.writeDataStore()
-      super.onCleared()
-   }
 
    // ===============================
    // S T A T E   C H A N G E S
@@ -133,7 +122,6 @@ class PeopleViewModel(
          is ResultData.Error -> {
             val message = "Failed to create a person ${resultData.throwable.localizedMessage}"
             logError(TAG, message)
-            // showOnError(message = message, navEvent = NavEvent.ToPeopleList)
          }
       }
    }
@@ -149,7 +137,7 @@ class PeopleViewModel(
    }
    private fun remove(person: Person) {
       logDebug(TAG, "removePerson: $person")
-      when (val resultData = _repository.remove(person.id)) {
+      when (val resultData = _repository.remove(person)) {
          is ResultData.Success -> fetch()
          is ResultData.Error -> {
             val message = "Failed to remove a person ${resultData.throwable.localizedMessage}"
