@@ -8,6 +8,8 @@ sealed class PersonIntent {
    data class  EmailChange(val email: String) : PersonIntent()
    data class  PhoneChange(val phone: String) : PersonIntent()
 
+   data object ClearState : PersonIntent()
+
    data class  FetchById(val id: String) : PersonIntent()
    data object Create : PersonIntent()
    data object Update : PersonIntent()

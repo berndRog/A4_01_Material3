@@ -1,4 +1,4 @@
-package de.rogallab.mobile
+package de.rogallab.mobile.ui
 
 import android.content.res.Configuration
 import android.os.Bundle

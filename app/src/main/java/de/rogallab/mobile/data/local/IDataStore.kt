@@ -1,4 +1,4 @@
-package de.rogallab.mobile.data
+package de.rogallab.mobile.data.local
 
 import de.rogallab.mobile.domain.entities.Person
 

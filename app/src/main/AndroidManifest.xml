@@ -3,6 +3,7 @@
   xmlns:tools="http://schemas.android.com/tools">
 
   <application
+    android:name=".AppApplication"
     android:allowBackup="true"
     android:dataExtractionRules="@xml/data_extraction_rules"
     android:fullBackupContent="@xml/backup_rules"
@@ -11,7 +12,7 @@
     android:supportsRtl="true"
     tools:targetApi="34">
     <activity
-      android:name=".MainActivity"
+      android:name=".ui.MainActivity"
       android:exported="true"
       android:theme="@style/Theme.A4_01_Material3">
       <intent-filter>

@@ -1,11 +1,14 @@
-package de.rogallab.mobile.data.local
+package de.rogallab.mobile.data.local.datastore
 
 import android.content.Context
-import de.rogallab.mobile.data.IDataStore
+import de.rogallab.mobile.data.local.IDataStore
+import de.rogallab.mobile.data.local.Seed
 import de.rogallab.mobile.domain.entities.Person
 import de.rogallab.mobile.domain.utilities.logDebug
 import de.rogallab.mobile.domain.utilities.logError
 import de.rogallab.mobile.domain.utilities.logVerbose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -32,8 +35,12 @@ class DataStore(
    override fun selectAll(): List<Person> =
       _people.toList()
 
-   override fun selectWhere(predicate: (Person) -> Boolean): List<Person> =
+
+   override fun selectWhere(
+      predicate: (Person) -> Boolean
+   ): List<Person> =
       _people.filter(predicate).toList()
+
 
    override fun findById(id: String): Person? =
       _people.firstOrNull{ it:Person -> it.id == id }
@@ -75,7 +82,7 @@ class DataStore(
          val file = File(filePath)
          if (!file.exists() || file.readText().isBlank()) {
             // seed _people with some data
-            seedData()
+            _people = Seed().people
             logVerbose(TAG, "read: seedData people:${_people.size}")
             write()
             return
@@ -83,8 +90,8 @@ class DataStore(
          // read json from a file and convert to a list of people
          val jsonString = File(filePath).readText()
          _people = _json.decodeFromString(jsonString)
-
-         logVerbose(TAG, jsonString)
+         // logVerbose(TAG, jsonString)
+         logDebug(TAG, "decode JSON: ${_people.size} People")
       } catch (e: Exception) {
          logError(TAG, "Failed to read: ${e.message}")
          throw e
@@ -96,10 +103,11 @@ class DataStore(
       try {
          val filePath = getFilePath(FILE_NAME)
          val jsonString = _json.encodeToString(_people)
+         logDebug(TAG, "encode JSON: ${_people.size} People")
          // save to a file
          val file = File(filePath)
          file.writeText(jsonString)
-         logVerbose(TAG, "write: $jsonString")
+         // logVerbose(TAG, jsonString)
       } catch (e: Exception) {
          logError(TAG, "Failed to write: ${e.message}")
          throw e
@@ -134,31 +142,9 @@ class DataStore(
       return directory.mkdirs()
    }
 
-   private fun seedData() {
-      val firstNames = mutableListOf(
-         "Arne", "Berta", "Cord", "Dagmar", "Ernst", "Frieda", "Günter", "Hanna",
-         "Ingo", "Johanna", "Klaus", "Luise", "Martin", "Nadja", "Otto", "Patrizia",
-         "Quirin", "Rebecca", "Stefan", "Tanja", "Uwe", "Veronika", "Walter", "Xaver",
-         "Yvonne", "Zwantje")
-      val lastNames = mutableListOf(
-         "Arndt", "Bauer", "Conrad", "Diehl", "Engel", "Fischer", "Graf", "Hoffmann",
-         "Imhoff", "Jung", "Klein", "Lang", "Meier", "Neumann", "Olbrich", "Peters",
-         "Quart", "Richter", "Schmidt", "Thormann", "Ulrich", "Vogel", "Wagner", "Xander",
-         "Yakov", "Zander")
-//      val random = Random(0)
-      for (index in firstNames.indices) {
-//         var indexFirst = random.nextInt(firstNames.size)
-//         var indexLast = random.nextInt(lastNames.size)
-         val firstName = firstNames[index]
-         val lastName = lastNames[index]
-         val person = Person(firstName, lastName)
-         _people.add(person)
-      }
-   }
-
    companion object {
       private const val TAG = "<-DataStore"
       private const val DIRECTORY_NAME = "android"
-      private const val FILE_NAME = "people1.json"
+      private const val FILE_NAME = "people2.json"
    }
 }

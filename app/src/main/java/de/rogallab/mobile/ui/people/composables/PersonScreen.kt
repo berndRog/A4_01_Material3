@@ -33,14 +33,18 @@ import de.rogallab.mobile.domain.utilities.logError
 import de.rogallab.mobile.ui.composables.InputEmail
 import de.rogallab.mobile.ui.composables.InputName
 import de.rogallab.mobile.ui.composables.InputPhone
+import de.rogallab.mobile.ui.people.PeopleUiState
 import de.rogallab.mobile.ui.people.PeopleViewModel
+import de.rogallab.mobile.ui.people.PersonInputValidator
 import de.rogallab.mobile.ui.people.PersonIntent
 import de.rogallab.mobile.ui.people.PersonUiState
+import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PersonScreen(
    viewModel: PeopleViewModel = viewModel(),
+   validator: PersonInputValidator,
    isInputMode: Boolean = true,
    id: String? = null
 ) {
@@ -49,8 +53,8 @@ fun PersonScreen(
       by viewModel.personUiStateFlow.collectAsStateWithLifecycle()
 
    val screenTitle =
-      if (isInputMode) stringResource(R.string.person_input)
-      else stringResource(R.string.person_detail)
+      if (isInputMode) stringResource(R.string.personInput)
+      else stringResource(R.string.personDetail)
    val tag =
       if (isInputMode) "<-PersonInputScreen"
       else "<-PersonDetailScreen"
@@ -94,35 +98,31 @@ fun PersonScreen(
       InputName(
          name = personUiState.person.firstName,          // State ↓
          onNameChange = { firstName: String ->           // Event ↑
-            viewModel.onProcessIntent(PersonIntent.FirstNameChange(firstName)) },
-         label = stringResource(R.string.firstname),            // State ↓
-         validateName = viewModel::validateFirstName,    // Event ↑ no state change
+         viewModel.onProcessIntent(PersonIntent.FirstNameChange(firstName)) },
+         label = stringResource(R.string.firstName),     // State ↓
+         validateName = validator::validateFirstName,    // parameter
       )
       InputName(
          name = personUiState.person.lastName,           // State ↓
          onNameChange = { lastName: String ->            // Event ↑
             viewModel.onProcessIntent(PersonIntent.LastNameChange(lastName)) },
-         label = stringResource(R.string.lastname),             // State ↓
-         validateName = viewModel::validateLastName,     // Event ↑ no state change
+         label = stringResource(R.string.lastName),             // State ↓
+         validateName = validator::validateLastName,     // parameter
       )
       InputEmail(
          email = personUiState.person.email,             // State ↓
          onEmailChange = { email:String ->               // Event ↑
             viewModel.onProcessIntent(PersonIntent.EmailChange(email)) },
-         validateEmail = viewModel::validateEmail        // Event ↑ no state change
+         validateEmail = validator::validateEmail        // parameter
       )
       InputPhone(
          phone = personUiState.person.phone,             // State ↓
          onPhoneChange = { phone:String ->               // Event ↑
             viewModel.onProcessIntent(PersonIntent.PhoneChange(phone)) },
-         validatePhone = viewModel::validatePhone        // Event ↑ no state change
+         validatePhone = validator::validatePhone        // parameter
       )
    } // Column
 }
-
-
-
-
 /*
 Button(
 onClick = {

@@ -52,7 +52,7 @@ fun PeopleListScreen(
       viewModel.onProcessIntent(PeopleIntent.Fetch)
    }
 
-   val screenTitle = stringResource(R.string.people_list)
+   val screenTitle = stringResource(R.string.peopleList)
    val windowInsets = WindowInsets.systemBars
       .add(WindowInsets.safeGestures)
 

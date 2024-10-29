@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="person_input">Person hinzufügen</string>
-  <string name="person_detail">Person bearbeiten</string>
-  <string name="people_list">Personen</string>
-  <string name="firstname">Vorname</string>
-  <string name="lastname">Nachname</string>
+  <string name="personInput">Person hinzufügen</string>
+  <string name="personDetail">Person bearbeiten</string>
+  <string name="peopleList">Personen</string>
+  <string name="firstName">Vorname</string>
+  <string name="lastName">Nachname</string>
   <string name="email">E-Mail Adresse</string>
   <string name="phone">Telefonnummer</string>
   <string name="errorCharMin">2</string>
   <string name="errorCharMax">16</string>
-  <string name="errorFirstnameTooShort">Vorname zu kurz</string>
-  <string name="errorFirstnameTooLong">Vorname zu lang</string>
-  <string name="errorLastnameTooShort">Nachnme zu kurz</string>
-  <string name="errorLastnameTooLong">Nachname zu lang</string>
+  <string name="errorFirstNameTooShort">Vorname zu kurz</string>
+  <string name="errorFirstNameTooLong">Vorname zu lang</string>
+  <string name="errorLastNameTooShort">Nachnme zu kurz</string>
+  <string name="errorLastNameTooLong">Nachname zu lang</string>
   <string name="errorEmail">E-Mailadresse ist ungültig</string>
   <string name="errorPhone">Telefonnummer ist ungültig</string>
   <string name="send">Senden</string>

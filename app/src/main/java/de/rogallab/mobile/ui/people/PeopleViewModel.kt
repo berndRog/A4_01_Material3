@@ -3,14 +3,13 @@ package de.rogallab.mobile.ui.people
 import android.app.Application
 import android.util.Patterns
 import androidx.lifecycle.AndroidViewModel
-import de.rogallab.mobile.data.PeopleRepository
-import de.rogallab.mobile.data.local.DataStore
+import de.rogallab.mobile.AppApplication
+import de.rogallab.mobile.data.repositories.PeopleRepository
+import de.rogallab.mobile.data.local.datastore.DataStore
 import de.rogallab.mobile.domain.ResultData
 import de.rogallab.mobile.domain.entities.Person
 import de.rogallab.mobile.domain.utilities.logDebug
 import de.rogallab.mobile.domain.utilities.logError
-import de.rogallab.mobile.ui.errors.ErrorResources
-import de.rogallab.mobile.ui.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -23,13 +22,13 @@ class PeopleViewModel(
    private val _dataStore = DataStore(_context)
    private val _repository = PeopleRepository(_dataStore)
    // get error resources from the context
-   private val _resourceProvider = ResourceProvider(_context)
-   private val _errorResources = ErrorResources(_resourceProvider)
+   private val _errorMessages = AppApplication.errorMessages
+
+   private val _validator = AppApplication.personValidator
 
    // ===============================
    // S T A T E   C H A N G E S
    // ===============================
-
    // PEOPLE LIST SCREEN <=> PeopleViewModel
    private val _peopleUiStateFlow = MutableStateFlow(PeopleUiState())
    val peopleUiStateFlow = _peopleUiStateFlow.asStateFlow()
@@ -68,6 +67,8 @@ class PeopleViewModel(
          is PersonIntent.LastNameChange -> onLastNameChange(intent.lastName)
          is PersonIntent.EmailChange -> onEmailChange(intent.email)
          is PersonIntent.PhoneChange -> onPhoneChange(intent.phone)
+
+         is PersonIntent.ClearState -> clearState()
 
          is PersonIntent.FetchById -> fetchById(intent.id)
          is PersonIntent.Create -> create()
@@ -150,76 +151,32 @@ class PeopleViewModel(
       _personUiStateFlow.update { it.copy(person = Person()) }
    }
 
-   // ===============================
-   // N O   S T A T E   C H A N G E S
-   // ===============================
-   // Validation is unrelated to state management and simply returns a result
-   // We can call the validation function directly in the Composables
-   fun validateFirstName(firstName: String): Pair<Boolean, String> {
-      return if (firstName.isEmpty() || firstName.length < _errorResources.charMin)
-         Pair(true, _errorResources.firstnameTooShort)
-      else if (firstName.length > _errorResources.charMax)
-         Pair(true, _errorResources.firstnameTooLong)
-      else
-         Pair(false, "")
-   }
-   fun validateLastName(lastName: String): Pair<Boolean, String> =
-      if (lastName.isEmpty() || lastName.length < _errorResources.charMin)
-         Pair(true, _errorResources.lastnameTooShort)
-      else if (lastName.length > _errorResources.charMax)
-         Pair(true, _errorResources.lastnameTooLong)
-      else
-         Pair(false, "")
-
-   fun validateEmail(email: String?): Pair<Boolean, String> {
-      email?.let {
-         when (android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
-            true -> return Pair(false, "") // email ok
-            false -> return Pair(true, _errorResources.emailInValid)
-         }
-      } ?: return Pair(false, "")
-   }
-   fun validatePhone(phone: String?): Pair<Boolean, String> {
-      phone?.let { it ->
-         when (!Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
-            true -> return Pair(false, "")   // phone ok
-            false -> return Pair(true, _errorResources.phoneInValid)
-         }
-      } ?: return Pair(false, "")
-   }
+   // =========================================
+   // V A L I D A T E   I N P U T   F I E L D S
+   // =========================================
 
    // validate all input fields after user finished input into the form
-   fun validate(isInput: Boolean) {
-      // input is ok        -> add and navigate up
-      // detail is ok       -> update and navigate up
-      // is the is an error -> show error and stay on screen
-      val charMin = _errorResources.charMin
-      val charMax = _errorResources.charMax
+   fun validate(isInput: Boolean): Boolean {
       val person = _personUiStateFlow.value.person
-      // firstName or lastName too short or to long
-      if (person.firstName.isEmpty() || person.firstName.length < charMin) {
-         logError(TAG, _errorResources.firstnameTooShort)
-      } else if (person.firstName.length > charMax) {
-         logError(TAG, _errorResources.firstnameTooLong)
-      } else if (person.lastName.isEmpty() || person.lastName.length < charMin) {
-         logError(TAG, _errorResources.lastnameTooShort)
-      } else if (person.lastName.length > charMax) {
-         logError(TAG, _errorResources.lastnameTooLong)
-      }
-      // email not valid
-      else if (person.email != null &&
-         !Patterns.EMAIL_ADDRESS.matcher(person.email).matches()) {
-         logError(TAG, _errorResources.emailInValid)
-      }
-      // phone not valid
-      else if (person.phone != null &&
-         !Patterns.PHONE.matcher(person.phone).matches()) {
-         logError(TAG, _errorResources.phoneInValid)
-      } else {
+
+      if(validateAndLogError(_validator.validateFirstName(person.firstName)) &&
+         validateAndLogError(_validator.validateLastName(person.lastName)) &&
+         validateAndLogError(_validator.validateEmail(person.email)) &&
+         validateAndLogError(_validator.validatePhone(person.phone))
+      ) {
          // write data to repository
          if (isInput) this.create()
-         else this.update()
+         else         this.update()
+         return true
+      } else {
+         return false
       }
+   }
+
+   private fun validateAndLogError(validationResult: Pair<Boolean, String>): Boolean {
+      val (success, message) = validationResult
+      if (!success) logError(TAG, message)
+      return success
    }
 
    companion object {
