@@ -8,9 +8,10 @@
  */
 plugins {
    alias(libs.plugins.android.application)
-   alias(libs.plugins.jetbrains.kotlin.android)
+   alias(libs.plugins.kotlin.android)
    alias(libs.plugins.google.devtools.ksp)
    alias(libs.plugins.kotlin.serialization)
+   alias(libs.plugins.kotlin.compose.compiler)
 }
 
 /**
@@ -25,14 +26,13 @@ kotlin {
    jvmToolchain(17)
 }
 
-
 android {
    namespace = "de.rogallab.mobile"
    compileSdk = 35
 
    defaultConfig {
       applicationId = "de.rogallab.mobile"
-      minSdk = 26
+      minSdk = 32
       targetSdk = 34
       versionCode = 1
       versionName = "1.0"
@@ -63,9 +63,10 @@ android {
    }
    buildFeatures {
       compose = true
+      buildConfig = true
    }
    composeOptions {
-      kotlinCompilerExtensionVersion = "1.5.14"
+      kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
    }
    packaging {
       resources {
@@ -87,7 +88,8 @@ dependencies {
    // https://kotlinlang.org/docs/releases.html
    implementation (libs.kotlinx.coroutines.core)
    implementation (libs.kotlinx.coroutines.android)
-
+   // https://github.com/Kotlin/kotlinx-datetime
+   implementation (libs.kotlinx.datetime)
    // Ui Activity
    // https://developer.android.com/jetpack/androidx/releases/activity
    implementation(libs.androidx.activity.compose)
@@ -98,11 +100,19 @@ dependencies {
    implementation(libs.androidx.compose.ui.graphics)
    implementation(libs.androidx.compose.ui.tooling.preview)
    implementation(libs.androidx.compose.material3)
+   implementation(libs.androidx.ui.text.google.fonts)
    implementation(libs.material.icons.extended)
+   // Ui Camera
+   // https://developer.android.com/jetpack/androidx/releases/camera
+   implementation(libs.androidx.camera.camera2)
+   implementation(libs.androidx.camera.core)
+   implementation(libs.androidx.camera.lifecycle)
+   implementation(libs.androidx.camera.video)
+   implementation(libs.androidx.camera.view)
+   implementation(libs.androidx.camera.extensions)
 
    // Ui Lifecycle
    // https://developer.android.com/jetpack/androidx/releases/lifecycle
-   // val archVersion = "2.2.0"
    implementation(libs.androidx.lifecycle.viewmodel.ktx)
    // ViewModel utilities for Compose
    implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -112,26 +122,25 @@ dependencies {
 
    // Ui Navigation
    // https://developer.android.com/jetpack/androidx/releases/navigation
-   implementation(libs.androidx.navigation.ui.ktx)
-   implementation(libs.androidx.navigation.compose)
+//   implementation(libs.androidx.navigation.ui.ktx)
+//   implementation(libs.androidx.navigation.compose)
    // Jetpack Compose Integration
    implementation(libs.androidx.navigation.compose)
 
-   // Image loadin
+   // Image loading
    // https://coil-kt.github.io/coil/
    implementation(libs.coil.compose)
 
    // Koin
-   // https://insert-koin.io/docs/3.2.0/getting-started/android/
-   implementation(platform(libs.koin.bom))
+// implementation(libs.koin.androidx.startup)
    implementation(libs.koin.android)
    implementation(libs.koin.androidx.compose)
-   // Java Compatibility
    implementation (libs.koin.android.compat)
 
-   // Ktor/Kotlin JSON Serializer
+   // JSON Serializer
    implementation(libs.kotlinx.serialization.json)
-   implementation(libs.androidx.ui.text.google.fonts)
+
+
    // TESTS -----------------------
    testImplementation(libs.junit)
    testImplementation(libs.koin.test)
@@ -172,7 +181,7 @@ dependencies {
    androidTestImplementation(libs.koin.test.junit4)
    androidTestImplementation(libs.koin.test.junit5)
 
-   debugImplementation(libs.androidx.ui.tooling)
+//   debugImplementation(libs.androidx.ui.tooling)
    debugImplementation(libs.androidx.ui.test.manifest)
 
 }

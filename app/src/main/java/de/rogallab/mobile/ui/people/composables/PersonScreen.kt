@@ -86,8 +86,9 @@ fun PersonScreen(
          navigationIcon = {
             IconButton(onClick = {
                logDebug(tag, "Up (reverse) -> PeopleListScreen")
-               // Check input fields and navigate to owners list or show error
-               viewModel.validate(isInputMode)
+               if(viewModel.validate(isInputMode)) {
+                  // navigate reverse to PeopleListScreen
+               }
             }) {
                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                   contentDescription = stringResource(R.string.back))

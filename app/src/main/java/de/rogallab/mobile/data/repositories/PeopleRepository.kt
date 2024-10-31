@@ -25,14 +25,14 @@ class PeopleRepository(
          ResultData.Error(t)
       }
 
-   override fun findById(id: String): ResultData<Person?> =
+   override fun getById(id: String): ResultData<Person?> =
       try {
          ResultData.Success(_dataStore.findById(id))
       } catch (t: Throwable) {
          ResultData.Error(t)
       }
 
-   override fun findBy(
+   override fun getBy(
       predicate: (Person) -> Boolean
    ): ResultData<Person?> =
       try {

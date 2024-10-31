@@ -93,11 +93,11 @@ fun PeopleListScreen(
                id = person.id,
                firstName = person.firstName,
                lastName = person.lastName,
-               onClicked = { id: String ->
-                  logInfo(tag, "Person clicked: $id")
+               onClicked = {
+                  logInfo(tag, "Person clicked: ${person.lastName}")
                },
-               onDeleted = { id: String ->
-                  logInfo(tag, "Person deleted: $id")
+               onDeleted = {
+                  logInfo(tag, "Person deleted: ${person.lastName}")
                   viewModel.onProcessIntent(PersonIntent.Remove(person))
                }
             )

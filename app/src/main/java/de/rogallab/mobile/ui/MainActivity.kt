@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import de.rogallab.mobile.AppApplication
 import de.rogallab.mobile.ui.people.PeopleViewModel
+import de.rogallab.mobile.ui.people.composables.PeopleSwipeListScreen
 import de.rogallab.mobile.ui.people.composables.PersonScreen
 import de.rogallab.mobile.ui.theme.AppTheme
 
@@ -22,13 +23,16 @@ class MainActivity : BaseActivity(TAG) {
 
          AppTheme {
             Surface {
-               PersonScreen(
-                  viewModel,
-                  validator = AppApplication.personValidator,
-                  isInputMode = true
-               )
+//               PersonScreen(
+//                  viewModel,
+//                  validator = AppApplication.personValidator,
+//                  isInputMode = true
+//               )
                // PeopleListScreen()
-               //PeopleSwipeListScreen()
+
+               PeopleSwipeListScreen(
+                  viewModel = viewModel
+               )
             }
          }
       }

@@ -21,8 +21,6 @@ class PeopleViewModel(
    private val _context = application.applicationContext
    private val _dataStore = DataStore(_context)
    private val _repository = PeopleRepository(_dataStore)
-   // get error resources from the context
-   private val _errorMessages = AppApplication.errorMessages
 
    private val _validator = AppApplication.personValidator
 
@@ -68,8 +66,7 @@ class PeopleViewModel(
          is PersonIntent.EmailChange -> onEmailChange(intent.email)
          is PersonIntent.PhoneChange -> onPhoneChange(intent.phone)
 
-         is PersonIntent.ClearState -> clearState()
-
+         is PersonIntent.ClearState -> clear()
          is PersonIntent.FetchById -> fetchById(intent.id)
          is PersonIntent.Create -> create()
          is PersonIntent.Update -> update()
@@ -104,7 +101,7 @@ class PeopleViewModel(
 
    private fun fetchById(id: String) {
       logDebug(TAG, "fetchPersonById: $id")
-      when (val resultData = _repository.findById(id)) {
+      when (val resultData = _repository.getById(id)) {
          is ResultData.Success -> {
             _personUiStateFlow.update { it: PersonUiState ->
                it.copy(person = resultData.data ?: Person())  // new UiState
@@ -115,6 +112,10 @@ class PeopleViewModel(
             logError(TAG, message)
          }
       }
+   }
+
+   private fun clear() {
+      _personUiStateFlow.update { it.copy(person = Person()) }
    }
    private fun create() {
       logDebug(TAG, "createPerson")
@@ -147,14 +148,9 @@ class PeopleViewModel(
       }
    }
 
-   fun clearState() {
-      _personUiStateFlow.update { it.copy(person = Person()) }
-   }
-
    // =========================================
    // V A L I D A T E   I N P U T   F I E L D S
    // =========================================
-
    // validate all input fields after user finished input into the form
    fun validate(isInput: Boolean): Boolean {
       val person = _personUiStateFlow.value.person

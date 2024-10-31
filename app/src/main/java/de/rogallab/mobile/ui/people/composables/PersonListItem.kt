@@ -18,11 +18,11 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun PersonListItem(
-   id: String,                      // State ↓
-   firstName: String,               // State ↓
-   lastName: String,                // State ↓
-   onClicked: (String) -> Unit,     // Event ↑
-   onDeleted: (String) -> Unit      // Event ↑
+   id: String,                // State ↓
+   firstName: String,         // State ↓
+   lastName: String,          // State ↓
+   onClicked: () -> Unit,     // Event ↑
+   onDeleted: () -> Unit      // Event ↑
 ) {
 
    Column {
@@ -31,20 +31,18 @@ fun PersonListItem(
 
       Row(
          verticalAlignment = Alignment.CenterVertically,
-         modifier = Modifier
-            .padding(vertical = 4.dp)
-            .clickable { onClicked(id) }
+         modifier = Modifier.padding(vertical = 4.dp)
       ) {
          Text(
             modifier = Modifier
                .weight(0.9f).padding(start = 4.dp)
-               .clickable { onClicked(id) },
+               .clickable { onClicked() },
             text = "$firstName $lastName",
             style = MaterialTheme.typography.bodyLarge
          )
 
          IconButton(
-            onClick = {  onDeleted(id)  }, // Event ↑
+            onClick = {  onDeleted()  }, // Event ↑
             modifier = Modifier
                .weight(0.1f).padding(end = 4.dp)
          ) {

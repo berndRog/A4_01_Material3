@@ -6,8 +6,8 @@ interface IPeopleRepository {
 
     fun getAll(): ResultData<List<Person>>
     fun getWhere(predicate: (Person) -> Boolean): ResultData<List<Person>>
-    fun findById(id: String): ResultData<Person?>
-    fun findBy(predicate: (Person) -> Boolean): ResultData<Person?>
+    fun getById(id: String): ResultData<Person?>
+    fun getBy(predicate: (Person) -> Boolean): ResultData<Person?>
 
     fun create(person: Person): ResultData<Unit>
     fun update(person: Person): ResultData<Unit>
