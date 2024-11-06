@@ -27,24 +27,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import de.rogallab.mobile.AppStart
 import de.rogallab.mobile.R
 import de.rogallab.mobile.domain.utilities.logDebug
 import de.rogallab.mobile.domain.utilities.logError
-import de.rogallab.mobile.ui.composables.InputEmail
-import de.rogallab.mobile.ui.composables.InputName
-import de.rogallab.mobile.ui.composables.InputPhone
-import de.rogallab.mobile.ui.people.PeopleUiState
+
 import de.rogallab.mobile.ui.people.PeopleViewModel
-import de.rogallab.mobile.ui.people.PersonInputValidator
+import de.rogallab.mobile.ui.people.PersonValidator
 import de.rogallab.mobile.ui.people.PersonIntent
 import de.rogallab.mobile.ui.people.PersonUiState
-import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PersonScreen(
    viewModel: PeopleViewModel = viewModel(),
-   validator: PersonInputValidator,
+   validator: PersonValidator = AppStart.personValidator,
    isInputMode: Boolean = true,
    id: String? = null
 ) {
@@ -86,9 +83,6 @@ fun PersonScreen(
          navigationIcon = {
             IconButton(onClick = {
                logDebug(tag, "Up (reverse) -> PeopleListScreen")
-               if(viewModel.validate(isInputMode)) {
-                  // navigate reverse to PeopleListScreen
-               }
             }) {
                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                   contentDescription = stringResource(R.string.back))
@@ -124,38 +118,3 @@ fun PersonScreen(
       )
    } // Column
 }
-/*
-Button(
-onClick = {
-   // check input fields and save the person
-   // viewModel.createPerson()
-},
-modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
-colors = ButtonDefaults.buttonColors(
-containerColor = MaterialTheme.colorScheme.secondary,
-contentColor = contentColorFor(MaterialTheme.colorScheme.secondary)
-)) {
-   Text(
-      text = stringResource(R.string.save),
-      style = MaterialTheme.typography.titleLarge
-   )
-}
-
-Button(
-onClick = {
-   // check input fields and save the person
-   // viewModel.createPerson()
-},
-modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
-colors = ButtonDefaults.buttonColors(
-containerColor = MaterialTheme.colorScheme.tertiary,
-contentColor = contentColorFor(MaterialTheme.colorScheme.tertiary)
-)
-) {
-   Text(
-      text = stringResource(R.string.save),
-      style = MaterialTheme.typography.titleLarge
-   )
-}
-
-*/

@@ -1,9 +1,8 @@
 package de.rogallab.mobile.ui.people
 
 import android.app.Application
-import android.util.Patterns
 import androidx.lifecycle.AndroidViewModel
-import de.rogallab.mobile.AppApplication
+import de.rogallab.mobile.AppStart
 import de.rogallab.mobile.data.repositories.PeopleRepository
 import de.rogallab.mobile.data.local.datastore.DataStore
 import de.rogallab.mobile.domain.ResultData
@@ -22,7 +21,7 @@ class PeopleViewModel(
    private val _dataStore = DataStore(_context)
    private val _repository = PeopleRepository(_dataStore)
 
-   private val _validator = AppApplication.personValidator
+   private val _validator = AppStart.personValidator
 
    // ===============================
    // S T A T E   C H A N G E S
@@ -48,7 +47,7 @@ class PeopleViewModel(
             logDebug(TAG, "fetch() people.size: ${peopleUiStateFlow.value.people.size}")
          }
          is ResultData.Error -> {
-            val message = "Failed to fetch people ${resultData.throwable.localizedMessage}"
+            val message = "Failed to fetch people ${resultData.throwable.message}"
             logError(TAG, message)
          }
       }
@@ -108,7 +107,7 @@ class PeopleViewModel(
             }
          }
          is ResultData.Error -> {
-            val message = "Failed to fetch person ${resultData.throwable.localizedMessage}"
+            val message = "Failed to fetch person ${resultData.throwable.message}"
             logError(TAG, message)
          }
       }
@@ -122,7 +121,7 @@ class PeopleViewModel(
       when (val resultData = _repository.create(_personUiStateFlow.value.person)) {
          is ResultData.Success -> fetch()
          is ResultData.Error -> {
-            val message = "Failed to create a person ${resultData.throwable.localizedMessage}"
+            val message = "Failed to create a person ${resultData.throwable.message}"
             logError(TAG, message)
          }
       }
@@ -132,7 +131,7 @@ class PeopleViewModel(
       when (val resultData = _repository.update(_personUiStateFlow.value.person)) {
          is ResultData.Success -> fetch()
          is ResultData.Error -> {
-            val message = "Failed to update a person ${resultData.throwable.localizedMessage}"
+            val message = "Failed to update a person ${resultData.throwable.message}"
             logError(TAG, message)
          }
       }
@@ -142,37 +141,10 @@ class PeopleViewModel(
       when (val resultData = _repository.remove(person)) {
          is ResultData.Success -> fetch()
          is ResultData.Error -> {
-            val message = "Failed to remove a person ${resultData.throwable.localizedMessage}"
+            val message = "Failed to remove a person ${resultData.throwable.message}"
             logError(TAG, message)
          }
       }
-   }
-
-   // =========================================
-   // V A L I D A T E   I N P U T   F I E L D S
-   // =========================================
-   // validate all input fields after user finished input into the form
-   fun validate(isInput: Boolean): Boolean {
-      val person = _personUiStateFlow.value.person
-
-      if(validateAndLogError(_validator.validateFirstName(person.firstName)) &&
-         validateAndLogError(_validator.validateLastName(person.lastName)) &&
-         validateAndLogError(_validator.validateEmail(person.email)) &&
-         validateAndLogError(_validator.validatePhone(person.phone))
-      ) {
-         // write data to repository
-         if (isInput) this.create()
-         else         this.update()
-         return true
-      } else {
-         return false
-      }
-   }
-
-   private fun validateAndLogError(validationResult: Pair<Boolean, String>): Boolean {
-      val (success, message) = validationResult
-      if (!success) logError(TAG, message)
-      return success
    }
 
    companion object {

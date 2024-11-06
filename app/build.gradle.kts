@@ -1,3 +1,7 @@
+import org.gradle.kotlin.dsl.android
+import org.gradle.kotlin.dsl.invoke
+import org.gradle.kotlin.dsl.test
+
 /**
  * Module-level functions
  * These functions are used to provide dependencies for the app.
@@ -66,7 +70,7 @@ android {
       buildConfig = true
    }
    composeOptions {
-      kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+      kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
    }
    packaging {
       resources {
@@ -88,71 +92,52 @@ dependencies {
    // https://kotlinlang.org/docs/releases.html
    implementation (libs.kotlinx.coroutines.core)
    implementation (libs.kotlinx.coroutines.android)
-   // https://github.com/Kotlin/kotlinx-datetime
-   implementation (libs.kotlinx.datetime)
+
    // Ui Activity
    // https://developer.android.com/jetpack/androidx/releases/activity
    implementation(libs.androidx.activity.compose)
+
    // Ui Compose
    // https://developer.android.com/jetpack/compose/bom/bom-mapping
-   implementation(platform(libs.androidx.compose.bom))
+   val composeBom = platform(libs.androidx.compose.bom)
+   implementation(composeBom)
+   testImplementation(composeBom)
+   androidTestImplementation(composeBom)
+   implementation(libs.androidx.compose.foundation)
+   implementation(libs.androidx.compose.material.icons)
    implementation(libs.androidx.compose.ui)
-   implementation(libs.androidx.compose.ui.graphics)
+   implementation(libs.androidx.compose.ui.tooling)
    implementation(libs.androidx.compose.ui.tooling.preview)
+   // with version numbers
    implementation(libs.androidx.compose.material3)
    implementation(libs.androidx.ui.text.google.fonts)
-   implementation(libs.material.icons.extended)
-   // Ui Camera
-   // https://developer.android.com/jetpack/androidx/releases/camera
-   implementation(libs.androidx.camera.camera2)
-   implementation(libs.androidx.camera.core)
-   implementation(libs.androidx.camera.lifecycle)
-   implementation(libs.androidx.camera.video)
-   implementation(libs.androidx.camera.view)
-   implementation(libs.androidx.camera.extensions)
 
    // Ui Lifecycle
    // https://developer.android.com/jetpack/androidx/releases/lifecycle
-   implementation(libs.androidx.lifecycle.viewmodel.ktx)
+   // implementation(libs.androidx.lifecycle.viewmodel.ktx)
    // ViewModel utilities for Compose
    implementation(libs.androidx.lifecycle.viewmodel.compose)
-   implementation(libs.androidx.lifecycle.runtime.ktx)
+   // implementation(libs.androidx.lifecycle.runtime.ktx)
    // Lifecycle utilities for Compose
    implementation (libs.androidx.lifecycle.runtime.compose)
 
    // Ui Navigation
    // https://developer.android.com/jetpack/androidx/releases/navigation
-//   implementation(libs.androidx.navigation.ui.ktx)
-//   implementation(libs.androidx.navigation.compose)
    // Jetpack Compose Integration
    implementation(libs.androidx.navigation.compose)
-
-   // Image loading
-   // https://coil-kt.github.io/coil/
-   implementation(libs.coil.compose)
-
-   // Koin
-// implementation(libs.koin.androidx.startup)
-   implementation(libs.koin.android)
-   implementation(libs.koin.androidx.compose)
-   implementation (libs.koin.android.compat)
 
    // JSON Serializer
    implementation(libs.kotlinx.serialization.json)
 
-
    // TESTS -----------------------
    testImplementation(libs.junit)
-   testImplementation(libs.koin.test)
-   // Koin for JUnit 4 / 5
-   testImplementation(libs.koin.test.junit4)
-   testImplementation(libs.koin.test.junit5)
+
 
    // ANDROID TESTS ---------------
    // https://developer.android.com/jetpack/androidx/releases/test
    // To use the androidx.test.core APIs
    androidTestImplementation(libs.androidx.core)
-   androidTestImplementation(libs.core.ktx)
+   androidTestImplementation(libs.androidx.core.ktx)
 
    // To use the androidx.test.espresso
    androidTestImplementation(libs.androidx.espresso.core)
@@ -168,18 +153,12 @@ dependencies {
    androidTestImplementation(libs.androidx.runner)
 
    // To use Compose Testing
-   androidTestImplementation(platform(libs.androidx.compose.bom))
    androidTestImplementation(libs.androidx.ui.test.junit4)
    // testing navigation
    androidTestImplementation(libs.androidx.navigation.testing)
    // testing coroutines
    androidTestImplementation(libs.kotlinx.coroutines.test)
 
-   // Koin Test features
-   androidTestImplementation(libs.koin.test)
-   // Koin for JUnit 4/5
-   androidTestImplementation(libs.koin.test.junit4)
-   androidTestImplementation(libs.koin.test.junit5)
 
 //   debugImplementation(libs.androidx.ui.tooling)
    debugImplementation(libs.androidx.ui.test.manifest)

@@ -46,13 +46,13 @@ fun PeopleListScreen(
    // observe the peopleUiStateFlow in the ViewModel
    // notify the UI when the state changes
    val peopleUiState by viewModel.peopleUiStateFlow.collectAsStateWithLifecycle()
+
    // read all people from repository, when the screen is created
    LaunchedEffect(Unit) {
       logVerbose(tag, "readPeople()")
       viewModel.onProcessIntent(PeopleIntent.Fetch)
    }
 
-   val screenTitle = stringResource(R.string.peopleList)
    val windowInsets = WindowInsets.systemBars
       .add(WindowInsets.safeGestures)
 
@@ -60,14 +60,13 @@ fun PeopleListScreen(
       modifier = Modifier
          .fillMaxSize()
          .padding(windowInsets.asPaddingValues())
-         .padding(horizontal = 16.dp)
    ) {
       TopAppBar(
-         title = { Text(screenTitle) }
+         title = { Text(stringResource(R.string.peopleList)) }
       )
 
       Row(
-         modifier = Modifier.padding(end = 8.dp),
+         modifier = Modifier.padding(horizontal = 16.dp),
       ) {
          Spacer(modifier = Modifier.weight(0.8f))
 
@@ -82,8 +81,7 @@ fun PeopleListScreen(
       }
 
       LazyColumn(
-         modifier = Modifier
-            .padding(top = 16.dp)
+         modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp)
       ) {
          items(
             items = peopleUiState.people,
@@ -93,6 +91,8 @@ fun PeopleListScreen(
                id = person.id,
                firstName = person.firstName,
                lastName = person.lastName,
+               email = person.email ?: "",
+               phone = person.phone ?: "",
                onClicked = {
                   logInfo(tag, "Person clicked: ${person.lastName}")
                },

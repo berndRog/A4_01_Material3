@@ -7,8 +7,6 @@ import de.rogallab.mobile.domain.entities.Person
 import de.rogallab.mobile.domain.utilities.logDebug
 import de.rogallab.mobile.domain.utilities.logError
 import de.rogallab.mobile.domain.utilities.logVerbose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -83,15 +81,15 @@ class DataStore(
          if (!file.exists() || file.readText().isBlank()) {
             // seed _people with some data
             _people = Seed().people
-            logVerbose(TAG, "read: seedData people:${_people.size}")
+            logVerbose(TAG, "create(): seedData ${_people.size} people")
             write()
             return
          }
          // read json from a file and convert to a list of people
          val jsonString = File(filePath).readText()
+         logVerbose(TAG, jsonString)
          _people = _json.decodeFromString(jsonString)
-         // logVerbose(TAG, jsonString)
-         logDebug(TAG, "decode JSON: ${_people.size} People")
+         logDebug(TAG, "read(): decode JSON: ${_people.size} people")
       } catch (e: Exception) {
          logError(TAG, "Failed to read: ${e.message}")
          throw e
@@ -103,7 +101,7 @@ class DataStore(
       try {
          val filePath = getFilePath(FILE_NAME)
          val jsonString = _json.encodeToString(_people)
-         logDebug(TAG, "encode JSON: ${_people.size} People")
+         logDebug(TAG, "write(): encode JSON: ${_people.size} people")
          // save to a file
          val file = File(filePath)
          file.writeText(jsonString)

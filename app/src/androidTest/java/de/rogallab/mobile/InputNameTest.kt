@@ -6,7 +6,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import de.rogallab.mobile.ui.composables.InputName
+import de.rogallab.mobile.ui.people.composables.InputName
 import org.junit.Rule
 import org.junit.Test
 

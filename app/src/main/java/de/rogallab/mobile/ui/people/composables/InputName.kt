@@ -1,4 +1,4 @@
-package de.rogallab.mobile.ui.composables
+package de.rogallab.mobile.ui.people.composables
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
@@ -41,6 +41,7 @@ Common input validation patterns in Jetpack Compose include:
 6. Visual Cues: Use visual indicators like color changes, icons, and error messages to indicate validation errors.
 7. Accessibility: Ensure error messages and input fields are accessible to screen readers.
 */
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputName(
