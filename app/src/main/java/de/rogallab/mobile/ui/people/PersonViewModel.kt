@@ -3,30 +3,35 @@ package de.rogallab.mobile.ui.people
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import de.rogallab.mobile.AppStart
-import de.rogallab.mobile.data.repositories.PeopleRepository
+import de.rogallab.mobile.data.repositories.PersonRepository
 import de.rogallab.mobile.data.local.datastore.DataStore
 import de.rogallab.mobile.domain.ResultData
 import de.rogallab.mobile.domain.entities.Person
 import de.rogallab.mobile.domain.utilities.logDebug
 import de.rogallab.mobile.domain.utilities.logError
+import de.rogallab.mobile.domain.utilities.newUuid
+import de.rogallab.mobile.ui.IErrorHandler
+import de.rogallab.mobile.ui.errors.ErrorHandler
+import de.rogallab.mobile.ui.errors.ErrorParams
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class PeopleViewModel(
-   application: Application
-) : AndroidViewModel(application) {
+class PersonViewModel(
+   application: Application,
+   errorHandler: IErrorHandler = ErrorHandler()
+) : AndroidViewModel(application),
+   IErrorHandler by errorHandler {
+
    // we must fix this by using a dependency injection framework
    private val _context = application.applicationContext
    private val _dataStore = DataStore(_context)
-   private val _repository = PeopleRepository(_dataStore)
+   private val _repository = PersonRepository(_dataStore)
 
-   private val _validator = AppStart.personValidator
+   // accessed in PersonScreen
+   val validator:PersonValidator = PersonValidator(_context)
 
-   // ===============================
-   // S T A T E   C H A N G E S
-   // ===============================
-   // PEOPLE LIST SCREEN <=> PeopleViewModel
+   //region PeopleListScreen -------------------------------------------------------------------------------
    private val _peopleUiStateFlow = MutableStateFlow(PeopleUiState())
    val peopleUiStateFlow = _peopleUiStateFlow.asStateFlow()
 
@@ -46,14 +51,12 @@ class PeopleViewModel(
             }
             logDebug(TAG, "fetch() people.size: ${peopleUiStateFlow.value.people.size}")
          }
-         is ResultData.Error -> {
-            val message = "Failed to fetch people ${resultData.throwable.message}"
-            logError(TAG, message)
-         }
+         is ResultData.Error -> handleErrorEvent(resultData.throwable)
       }
    }
+   //endregion
 
-   // PERSON SCREEN <=> PeopleViewModel
+   //region PersonScreen -------------------------------------------------------------------------------
    private val _personUiStateFlow = MutableStateFlow(PersonUiState())
    val personUiStateFlow = _personUiStateFlow.asStateFlow()
 
@@ -103,51 +106,70 @@ class PeopleViewModel(
       when (val resultData = _repository.getById(id)) {
          is ResultData.Success -> {
             _personUiStateFlow.update { it: PersonUiState ->
-               it.copy(person = resultData.data ?: Person())  // new UiState
+               it.copy(person = resultData.data ?: Person(id = newUuid()))  // new UiState
             }
          }
-         is ResultData.Error -> {
-            val message = "Failed to fetch person ${resultData.throwable.message}"
-            logError(TAG, message)
-         }
+         is ResultData.Error -> handleErrorEvent(resultData.throwable)
       }
    }
 
    private fun clear() {
-      _personUiStateFlow.update { it.copy(person = Person()) }
+      _personUiStateFlow.update { it.copy(person = Person(id = newUuid() )) }
    }
    private fun create() {
       logDebug(TAG, "createPerson")
       when (val resultData = _repository.create(_personUiStateFlow.value.person)) {
          is ResultData.Success -> fetch()
-         is ResultData.Error -> {
-            val message = "Failed to create a person ${resultData.throwable.message}"
-            logError(TAG, message)
-         }
+         is ResultData.Error -> handleErrorEvent(resultData.throwable)
       }
    }
    private fun update() {
       logDebug(TAG, "updatePerson")
       when (val resultData = _repository.update(_personUiStateFlow.value.person)) {
          is ResultData.Success -> fetch()
-         is ResultData.Error -> {
-            val message = "Failed to update a person ${resultData.throwable.message}"
-            logError(TAG, message)
-         }
+         is ResultData.Error -> handleErrorEvent(resultData.throwable)
       }
    }
    private fun remove(person: Person) {
       logDebug(TAG, "removePerson: $person")
       when (val resultData = _repository.remove(person)) {
          is ResultData.Success -> fetch()
-         is ResultData.Error -> {
-            val message = "Failed to remove a person ${resultData.throwable.message}"
-            logError(TAG, message)
-         }
+         is ResultData.Error -> handleErrorEvent(resultData.throwable)
+      }
+   }
+   //endregion
+
+   //region Validate input fields ------------------------------------------------------------------------
+   // validate all input fields after user finished input into the form
+   fun validate(isInput: Boolean): Boolean {
+      val person = _personUiStateFlow.value.person
+
+      if(validateAndLogError(validator.validateFirstName(person.firstName)) &&
+         validateAndLogError(validator.validateLastName(person.lastName)) &&
+         validateAndLogError(validator.validateEmail(person.email)) &&
+         validateAndLogError(validator.validatePhone(person.phone))
+      ) {
+         // write data to repository
+         if (isInput) this.create()
+         else         this.update()
+         return true
+      } else {
+         return false
       }
    }
 
+   private fun validateAndLogError(validationResult: Pair<Boolean, String>): Boolean {
+      val (error, message) = validationResult
+      if (error) {
+         onErrorEvent(ErrorParams(message = message, withUndoAction = false,
+            onUndoAction = {} ))  // navEvent = null))
+         logError(TAG, message)
+         return false
+      }
+      return true
+   }
+
    companion object {
-      private const val TAG = "<-PeopleViewModel"
+      private const val TAG = "<-PersonViewModel"
    }
 }

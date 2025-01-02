@@ -4,20 +4,11 @@ import android.content.Context
 import android.util.Patterns
 import de.rogallab.mobile.R
 
-//                    Singleton see also companion object
-class PersonValidator private constructor(context: Context){
+class PersonValidator(
+   context: Context
+){
    // Context is needed to access resources
    private val _context: Context = context
-   // Companion object is used to create a singleton with a parameter
-   companion object {
-      @Volatile private var INSTANCE: PersonValidator? = null
-      fun getInstance(context: Context): PersonValidator =
-         INSTANCE ?: synchronized(this) {
-            INSTANCE ?: buildValidator(context).also { INSTANCE = it }
-         }
-      private fun buildValidator(context: Context) =
-         PersonValidator(context.applicationContext)
-   }
 
    private val _charMin: Int by lazy {
       _context.getString(R.string.errorCharMin).toInt()

@@ -11,58 +11,86 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import de.rogallab.mobile.R
+import de.rogallab.mobile.domain.utilities.logDebug
+import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputPhone(
-   phone: String?,                                    // State ↓
+   phone: String,                                    // State ↓
    onPhoneChange: (String) -> Unit,                   // Event ↑
    validatePhone: (String?) -> Pair<Boolean, String>, // Event ↑
-   label: String  = stringResource(R.string.phone),        // State ↓
-   focusManager: FocusManager = LocalFocusManager.current,  // State ↓
-   keyboardController: SoftwareKeyboardController? =        // State ↓
-      LocalSoftwareKeyboardController.current
+   label: String = stringResource(R.string.phone),   // State ↓
 ) {
 
+   var localPhone by rememberSaveable { mutableStateOf(phone) }
    var isError by rememberSaveable { mutableStateOf(false) }
    var errorText by rememberSaveable { mutableStateOf("") }
    var isFocus by rememberSaveable { mutableStateOf(false) }
+   val focusManager = LocalFocusManager.current
+// val keyboardController = LocalSoftwareKeyboardController.current
 
-   // Reusable Validation Functions: Validate the input when it changes
-   val validate: (String?) -> Unit = { input ->
-      val (e, t) = validatePhone(input)
+   // Update localName when name changes
+   LaunchedEffect(phone) {
+      localPhone = phone
+   }
+
+   // Debounce mechanism to delay onNameChange call
+   LaunchedEffect(localPhone) {
+      delay(300) // Adjust delay as needed
+      if (!isError && localPhone != phone) {
+         onPhoneChange(localPhone)
+      }
+   }
+
+   // Validate the name when focus is lost
+   fun validateAndPropagatePhone() {
+      val (e, t) = validatePhone(localPhone)
       isError = e
       errorText = t
+      logDebug("<-InputPhone", "isError $e errorText $t")
+      if (!isError && localPhone != phone) {
+         onPhoneChange(localPhone) // Update ViewModel
+      }
    }
 
    OutlinedTextField(
-      modifier = Modifier.fillMaxWidth()
+      modifier = Modifier
+         .fillMaxWidth()
          .onFocusChanged { focusState ->
-            if (!focusState.isFocused && isFocus) validate(phone)
+            logDebug("<-InputPhone", "onFocusChanged !focusState.isFocused ${!focusState.isFocused} isFocus $isFocus")
+            if (!focusState.isFocused && isFocus) {
+               validateAndPropagatePhone()
+            }
             isFocus = focusState.isFocused
          },
-      value = phone ?: "",
-      onValueChange = { onPhoneChange(it) }, // Event ↑
+
+      value = localPhone,
+      onValueChange = {
+         localPhone = it
+         // onNameChange(localName)  // see debouncing
+         if (isError) {
+            // Reset error while user is typing
+            isError = false
+            errorText = ""
+         }
+      }, // Event ↑
       label = { Text(text = label) },
       textStyle = MaterialTheme.typography.bodyLarge,
       leadingIcon = {
          Icon(imageVector = Icons.Outlined.Phone,
-              contentDescription = label)
+            contentDescription = label)
       },
       singleLine = true,
       keyboardOptions = KeyboardOptions(
@@ -72,10 +100,9 @@ fun InputPhone(
       // check when keyboard action is clicked
       keyboardActions = KeyboardActions(
          onDone = {
-            keyboardController?.hide()
-            validate(phone)
-            if(!isError) {
-               keyboardController?.hide()
+            validateAndPropagatePhone()
+            if (!isError) {
+//             keyboardController?.hide()
                focusManager.clearFocus()
             }
          }

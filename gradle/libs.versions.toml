@@ -1,69 +1,67 @@
 [versions]
-androidxComposeBom = "2024.10.01"
-foundation = "1.7.5"
-androidxComposeMaterial3 = "1.3.1"
-uiTextGoogleFonts = "1.7.5"
+androidxComposeBom = "2024.12.01"
+navigation = "2.8.5"
+uiTextGoogleFonts = "1.7.6"
 
 activityCompose = "1.9.3"
 core = "1.15.0"
-kotlinx-coroutines = "1.9.0"
+coil = "1.4.0"
+kotlinx-coroutines = "1.10.1"
 kotlinx-serialization-json = "1.7.3"
 lifecycle = "2.8.7"
-navigation = "2.8.3"
+
 # testing
-androidTestCore = "1.6.1"
+testCore = "1.6.1"
+testRunner = "1.6.2"
 espresso = "3.6.1"
 extJunit = "1.2.1"
 junit = "4.13.2"
 truth = "1.6.0"
-manifest = "1.7.5"
+manifest = "1.7.6"
+
 # plugins
-agp = "8.7.2"
-compose-compiler = "2.0.0"  # must be same version as kotlin!?
-kotlin = "2.0.0"
-ksp = "2.0.0-1.0.21"
+agp = "8.8.0-rc02"
+kotlin = "2.0.21"         # 2.0.0
+ksp = "2.0.21-1.0.27"     #"2.0.0-1.0.21"
 
 
 [libraries]
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
-androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core" }
+compose-activity = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+core-ktx = { module = "androidx.core:core-ktx", version.ref = "core" }
 
 # Compose librs with no version numbers, belongs to BOM
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
-androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
-androidx-compose-material-icons= { group = "androidx.compose.material", name = "material-icons-extended" }
-androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
-androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
-androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-# with version numbers
-androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "androidxComposeMaterial3" }
-androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidxComposeBom" }
+compose-foundation = { module = "androidx.compose.foundation:foundation" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+compose-material-icons= { module = "androidx.compose.material:material-icons-extended" }
+compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-runtime = { module = "androidx.compose.runtime:runtime" }
+compose-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
+compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 
-
-
-androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
-androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
-
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
+compose-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+compose-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
-# testing
 
-androidx-core = { module = "androidx.test:core", version.ref = "androidTestCore" }
-android-core-ktx = { module = "androidx.test:core-ktx", version.ref = "androidTestCore" }
-androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
+# testing
+test-core = { module = "androidx.test:core", version.ref = "testCore" }
+test-core-ktx = { module = "androidx.test:core-ktx", version.ref = "testCore" }
+test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
 junit = { module = "junit:junit", version.ref = "junit" }
-androidx-junit = { module = "androidx.test.ext:junit", version.ref = "extJunit" }
-androidx-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "extJunit" }
-androidx-runner = { module = "androidx.test:runner", version.ref = "androidTestCore" }
-androidx-truth = { module = "androidx.test.ext:truth", version.ref = "truth" }
-androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
-androidx-navigation-testing = { module = "androidx.navigation:navigation-testing", version.ref = "navigation" }
-kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
-# debugging
-androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "manifest" }
+test-junit = { module = "androidx.test.ext:junit", version.ref = "extJunit" }
+test-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "extJunit" }
+test-runner = { module = "androidx.test:runner", version.ref = "testRunner" }
+test-truth = { module = "androidx.test.ext:truth", version.ref = "truth" }
+test-ui-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+test-navigation = { module = "androidx.navigation:navigation-testing", version.ref = "navigation" }
+test-kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+test-ui-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "manifest" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

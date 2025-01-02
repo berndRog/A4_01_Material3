@@ -1,6 +1,7 @@
 package de.rogallab.mobile.data.local
 
 import de.rogallab.mobile.domain.entities.Person
+import de.rogallab.mobile.domain.utilities.newUuid
 import kotlin.random.Random
 
 class Seed() {
@@ -34,7 +35,7 @@ class Seed() {
             "0${random.nextInt(1234, 9999)} " +
                "${random.nextInt(100, 999)}-" +
                "${random.nextInt(10, 9999)}"
-         val person = Person(firstName, lastName, email, phone)
+         val person = Person(firstName, lastName, email, phone, null, newUuid())
          people.add(person)
       }
    }

@@ -13,11 +13,14 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -33,19 +36,19 @@ import de.rogallab.mobile.domain.utilities.logDebug
 import de.rogallab.mobile.domain.utilities.logInfo
 import de.rogallab.mobile.domain.utilities.logVerbose
 import de.rogallab.mobile.ui.people.PeopleIntent
-import de.rogallab.mobile.ui.people.PeopleViewModel
+import de.rogallab.mobile.ui.people.PersonViewModel
 import de.rogallab.mobile.ui.people.PersonIntent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PeopleListScreen(
-   viewModel: PeopleViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+   viewModel: PersonViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
 ) {
    val tag = "<-PeopleListScreen"
 
    // observe the peopleUiStateFlow in the ViewModel
-   // notify the UI when the state changes
-   val peopleUiState by viewModel.peopleUiStateFlow.collectAsStateWithLifecycle()
+   val peopleUiState
+      by viewModel.peopleUiStateFlow.collectAsStateWithLifecycle()
 
    // read all people from repository, when the screen is created
    LaunchedEffect(Unit) {
@@ -53,35 +56,29 @@ fun PeopleListScreen(
       viewModel.onProcessIntent(PeopleIntent.Fetch)
    }
 
-   val windowInsets = WindowInsets.systemBars
-      .add(WindowInsets.safeGestures)
-
-   Column(
+   Scaffold(
       modifier = Modifier
-         .fillMaxSize()
-         .padding(windowInsets.asPaddingValues())
-   ) {
-      TopAppBar(
-         title = { Text(stringResource(R.string.peopleList)) }
-      )
-
-      Row(
-         modifier = Modifier.padding(horizontal = 16.dp),
-      ) {
-         Spacer(modifier = Modifier.weight(0.8f))
-
+         .fillMaxSize(),
+      topBar = {
+         TopAppBar(
+            title = { Text(stringResource(R.string.peopleList)) }
+         )
+      },
+      floatingActionButton = {
          FloatingActionButton(
             containerColor = MaterialTheme.colorScheme.tertiary,
-            onClick = {
-               logDebug(tag, "FAB clicked -> Navigate to PersonInputScreen")
-            }
+            onClick = { logDebug(tag, "FAB clicked") }
          ) {
             Icon(Icons.Default.Add, "Add a contact")
          }
       }
+   ) { innerPadding ->
 
       LazyColumn(
-         modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp)
+         modifier = Modifier
+            .padding(innerPadding)
+            .padding(horizontal = 16.dp)
+            .padding(top = 8.dp)
       ) {
          items(
             items = peopleUiState.people,

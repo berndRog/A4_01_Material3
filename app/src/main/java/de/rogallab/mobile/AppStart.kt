@@ -10,10 +10,6 @@ class AppStart : Application() {
       super.onCreate()
 
       logInfo(TAG, "onCreate()")
-
-      // Singletons are initialized here
-      personValidator = PersonValidator.getInstance(applicationContext)
-
    }
 
    companion object {
@@ -21,9 +17,5 @@ class AppStart : Application() {
       const val ISDEBUG = true
       const val ISVERBOSE = true
       private const val TAG = "<-AppApplication"
-
-      lateinit var personValidator: PersonValidator
-         private set
-
    }
 }

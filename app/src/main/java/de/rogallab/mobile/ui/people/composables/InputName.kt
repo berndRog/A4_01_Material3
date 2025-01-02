@@ -11,25 +11,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import de.rogallab.mobile.domain.utilities.logDebug
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /*
 Common input validation patterns in Jetpack Compose include:
@@ -41,44 +34,65 @@ Common input validation patterns in Jetpack Compose include:
 6. Visual Cues: Use visual indicators like color changes, icons, and error messages to indicate validation errors.
 7. Accessibility: Ensure error messages and input fields are accessible to screen readers.
 */
-
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputName(
-   name: String,                                            // State ↓
-   onNameChange: (String) -> Unit,                          // Event ↑
-   label: String = "Name",                                  // State ↓
-   validateName: (String) -> Pair<Boolean, String>,         // Event ↑
-   focusManager: FocusManager = LocalFocusManager.current,  // State ↓
-   keyboardController: SoftwareKeyboardController? =        // State ↓
-      LocalSoftwareKeyboardController.current
+   name: String,                                   // State ↓
+   onNameChange: (String) -> Unit,                 // Event ↑
+   label: String = "Name",                         // State ↓
+   validateName: (String) -> Pair<Boolean, String>,// Event ↑
 ) {
-   // local error state
+
+   var localName by rememberSaveable { mutableStateOf(name) }
+   var isFocus by rememberSaveable { mutableStateOf(false) }
    var isError by rememberSaveable { mutableStateOf(false) }
    var errorText by rememberSaveable { mutableStateOf("") }
-   var isFocus by rememberSaveable { mutableStateOf(false) }
+   val focusManager = LocalFocusManager.current
 
-   // Reusable Validation Functions: Validate the input when it changes
-   val validate: (String) -> Unit = { input ->
-      val (e, t) = validateName(input)
+   // Update localName when name changes
+   LaunchedEffect(name) {
+      localName = name
+   }
+
+   // Debounce mechanism to delay onNameChange call
+   LaunchedEffect(localName) {
+      delay(300) // Adjust delay as needed
+      if (!isError && localName != name) {
+         onNameChange(localName)
+      }
+   }
+
+   // Validate the name when focus is lost
+   fun validateAndPropagateName() {
+      val (e, t) = validateName(localName)
       isError = e
       errorText = t
+      logDebug("<-InputName", "isError $e errorText $t")
+      if (!isError && localName != name) {
+         onNameChange(localName) // Update ViewModel
+      }
    }
 
    OutlinedTextField(
-      modifier = Modifier.fillMaxWidth()
+      modifier = Modifier
+         .fillMaxWidth()
          .onFocusChanged { focusState ->
-            // debounce validation until the user stops typing
-            // to avoid excessive recompositions
+            logDebug("<-InputName","onFocusChanged !focusState.isFocused ${!focusState.isFocused} isFocus $isFocus")
             if (!focusState.isFocused && isFocus) {
-               logDebug("[InputName]","validate called: $name")
-               validate(name)
+               validateAndPropagateName()
             }
             isFocus = focusState.isFocused
          },
 
-      value = name,                          // State ↓
-      onValueChange = { onNameChange(it) },  // Event ↑
+      value = localName,                           // State ↓
+      onValueChange = {                            // Event ↑
+         localName = it
+         // onNameChange(localName)  // see debouncing
+         if (isError) {
+            // Reset error while user is typing
+            isError = false
+            errorText = ""
+         }
+      },
 
       label = { Text(text = label) },
       textStyle = MaterialTheme.typography.bodyLarge,
@@ -91,9 +105,8 @@ fun InputName(
       ),
       keyboardActions = KeyboardActions(
          onNext = {
-            validate(name)
+            validateAndPropagateName()
             if (!isError) {
-               keyboardController?.hide()
                focusManager.moveFocus(FocusDirection.Down)
             }
          }
@@ -114,3 +127,4 @@ fun InputName(
       }
    )
 }
+

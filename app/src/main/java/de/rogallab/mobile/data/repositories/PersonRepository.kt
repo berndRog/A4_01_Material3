@@ -5,7 +5,7 @@ import de.rogallab.mobile.domain.IPeopleRepository
 import de.rogallab.mobile.domain.ResultData
 import de.rogallab.mobile.domain.entities.Person
 
-class PeopleRepository(
+class PersonRepository(
    private val _dataStore: IDataStore
 ): IPeopleRepository {
 
