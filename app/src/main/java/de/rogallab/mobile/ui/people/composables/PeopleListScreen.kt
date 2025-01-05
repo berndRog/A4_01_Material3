@@ -1,24 +1,14 @@
 package de.rogallab.mobile.ui.people.composables
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.add
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeGestures
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,8 +26,8 @@ import de.rogallab.mobile.domain.utilities.logDebug
 import de.rogallab.mobile.domain.utilities.logInfo
 import de.rogallab.mobile.domain.utilities.logVerbose
 import de.rogallab.mobile.ui.people.PeopleIntent
-import de.rogallab.mobile.ui.people.PersonViewModel
 import de.rogallab.mobile.ui.people.PersonIntent
+import de.rogallab.mobile.ui.people.PersonViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,8 +47,7 @@ fun PeopleListScreen(
    }
 
    Scaffold(
-      modifier = Modifier
-         .fillMaxSize(),
+      modifier = Modifier.fillMaxSize(),
       topBar = {
          TopAppBar(
             title = { Text(stringResource(R.string.peopleList)) }

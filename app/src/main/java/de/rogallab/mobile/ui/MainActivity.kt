@@ -30,13 +30,13 @@ class MainActivity : BaseActivity(TAG) {
          }
 
          AppTheme {
-            PersonScreen(
-               viewModel,
-               isInputMode = true
-            )
-//            PeopleListScreen(
-//               viewModel = viewModel
+//            PersonScreen(
+//               viewModel,
+//               isInputMode = true
 //            )
+            PeopleListScreen(
+               viewModel = viewModel
+            )
 
          }
       }
