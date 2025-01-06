@@ -2,7 +2,6 @@ package de.rogallab.mobile
 
 import android.app.Application
 import de.rogallab.mobile.domain.utilities.logInfo
-import de.rogallab.mobile.ui.people.PersonValidator
 
 class AppStart : Application() {
 
@@ -13,9 +12,9 @@ class AppStart : Application() {
    }
 
    companion object {
-      const val ISINFO = true
-      const val ISDEBUG = true
-      const val ISVERBOSE = true
+      const val IS_INFO = true
+      const val IS_DEBUG = true
+      const val IS_VERBOSE = true
       private const val TAG = "<-AppApplication"
    }
 }

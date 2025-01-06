@@ -17,9 +17,9 @@ import de.rogallab.mobile.ui.theme.AppTheme
 
 class MainActivity : BaseActivity(TAG) {
 
-//   private val viewModel: PersonViewModel by viewModels {
-//      PersonViewModelFactory(application)
-//   }
+   private val viewModel: PersonViewModel by viewModels {
+      PersonViewModelFactory(application)
+   }
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -43,11 +43,7 @@ class MainActivity : BaseActivity(TAG) {
    }
 
    companion object {
-      const val ISINFO = true
-      const val ISDEBUG = true
-      const val ISVERBOSE = true
       private const val TAG = "<-MainActivity"
-
    }
 }
 

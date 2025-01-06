@@ -18,5 +18,7 @@
   <string name="send">Senden</string>
   <string name="save">Speichern</string>
   <string name="back">Zurück</string>
+  <string name="undoDeletePerson">Soll das Löschen der Person rückgäging gemacht werden?</string>
+  <string name="undoAnswer">Ja</string>
   <string name="app_name">Material3</string>
 </resources>

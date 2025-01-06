@@ -17,5 +17,7 @@
   <string name="send">Send</string>
   <string name="save">Save</string>
   <string name="back">Back</string>
+  <string name="undoDeletePerson">Do you want to undo the persons deletion?</string>
+  <string name="undoAnswer">Yes</string>
   <string name="app_name">Material3</string>
 </resources>

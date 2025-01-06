@@ -7,7 +7,7 @@ import de.rogallab.mobile.domain.utilities.logVerbose
 suspend fun showError(
    snackbarHostState: SnackbarHostState,  // State ↓
    params: ErrorParams,                   // State ↓
-   //onNavigate: (NavEvent) -> Unit,        // Event ↑
+   //onNavigate: (NavEvent) -> Unit,      // Event ↑
    onErrorEventHandled: () -> Unit = { }  // Event ↑
 ) {
    // Show Snackbar

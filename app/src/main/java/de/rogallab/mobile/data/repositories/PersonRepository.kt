@@ -4,6 +4,7 @@ import de.rogallab.mobile.data.local.IDataStore
 import de.rogallab.mobile.domain.IPeopleRepository
 import de.rogallab.mobile.domain.ResultData
 import de.rogallab.mobile.domain.entities.Person
+import de.rogallab.mobile.domain.exceptions.ApplicationException
 
 class PersonRepository(
    private val _dataStore: IDataStore

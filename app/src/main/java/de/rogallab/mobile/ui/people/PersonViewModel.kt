@@ -1,12 +1,12 @@
 package de.rogallab.mobile.ui.people
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import de.rogallab.mobile.AppStart
+import androidx.lifecycle.ViewModel
 import de.rogallab.mobile.data.repositories.PersonRepository
 import de.rogallab.mobile.data.local.datastore.DataStore
 import de.rogallab.mobile.domain.ResultData
 import de.rogallab.mobile.domain.entities.Person
+import de.rogallab.mobile.domain.utilities.as8
 import de.rogallab.mobile.domain.utilities.logDebug
 import de.rogallab.mobile.domain.utilities.logError
 import de.rogallab.mobile.domain.utilities.newUuid
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.update
 class PersonViewModel(
    application: Application,
    errorHandler: IErrorHandler = ErrorHandler()
-) : AndroidViewModel(application),
+): ViewModel(),
    IErrorHandler by errorHandler {
 
    // we must fix this by using a dependency injection framework
@@ -42,14 +42,20 @@ class PersonViewModel(
       }
    }
 
+
    // read all people from repository
+   init {
+      logDebug(TAG, "init")
+      fetch()
+   }
+
    private fun fetch() {
       when (val resultData = _repository.getAll()) {
          is ResultData.Success -> {
+            logDebug(TAG, "fetch() people.size: ${resultData.data.size}")
             _peopleUiStateFlow.update { it: PeopleUiState ->
                it.copy(people = resultData.data.toList())
             }
-            logDebug(TAG, "fetch() people.size: ${peopleUiStateFlow.value.people.size}")
          }
          is ResultData.Error -> handleErrorEvent(resultData.throwable)
       }
@@ -68,11 +74,12 @@ class PersonViewModel(
          is PersonIntent.EmailChange -> onEmailChange(intent.email)
          is PersonIntent.PhoneChange -> onPhoneChange(intent.phone)
 
-         is PersonIntent.ClearState -> clear()
+         is PersonIntent.ClearState -> clearState()
          is PersonIntent.FetchById -> fetchById(intent.id)
          is PersonIntent.Create -> create()
          is PersonIntent.Update -> update()
          is PersonIntent.Remove -> remove(intent.person)
+         is PersonIntent.Undo -> undoRemove()
       }
    }
 
@@ -113,7 +120,7 @@ class PersonViewModel(
       }
    }
 
-   private fun clear() {
+   private fun clearState() {
       _personUiStateFlow.update { it.copy(person = Person(id = newUuid() )) }
    }
    private fun create() {
@@ -130,11 +137,26 @@ class PersonViewModel(
          is ResultData.Error -> handleErrorEvent(resultData.throwable)
       }
    }
+
+   private var removedPerson: Person? = null
    private fun remove(person: Person) {
+      removedPerson = person
       logDebug(TAG, "removePerson: $person")
       when (val resultData = _repository.remove(person)) {
          is ResultData.Success -> fetch()
          is ResultData.Error -> handleErrorEvent(resultData.throwable)
+      }
+   }
+   private fun undoRemove() {
+      removedPerson?.let { person ->
+         logDebug(TAG, "undoRemovePerson: ${person.id.as8()}")
+         when(val resultData = _repository.create(person)) {
+            is ResultData.Success -> {
+               removedPerson = null
+               fetch()
+            }
+            is ResultData.Error -> handleErrorEvent(resultData.throwable)
+         }
       }
    }
    //endregion

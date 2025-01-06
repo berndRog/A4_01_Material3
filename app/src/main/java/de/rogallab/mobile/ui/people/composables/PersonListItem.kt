@@ -27,8 +27,6 @@ fun PersonListItem(
    onClicked: () -> Unit,     // Event ↑
    onDeleted: () -> Unit      // Event ↑
 ) {
-
-
    Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth()
